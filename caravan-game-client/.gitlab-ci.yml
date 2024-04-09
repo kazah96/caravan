@@ -1,0 +1,27 @@
+image: node:16.5.0
+
+variables:
+  NETLIFY_SITE_ID: $NETLIFY_SITE_ID
+  NETLIFY_AUTH_TOKEN: $NETLIFY_AUTH_TOKEN
+
+pages:
+  stage: deploy
+  cache:
+    # key:
+    #   files:
+    #     - package-lock.json
+    #   prefix: npm
+    paths:
+      - node_modules/
+  script:
+    - npm install
+    - npm run build
+    - cp -a dist/. public/
+    - gzip -k -9 $(find public -type f)
+    # - npm install -G netlify-cli
+    # - npx netlify deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --dir public/
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
