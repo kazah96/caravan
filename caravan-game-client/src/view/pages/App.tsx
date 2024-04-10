@@ -6,7 +6,6 @@ import { Main } from '@pages/Main/Main';
 import '@styles/index.css';
 
 import { LoginForm } from './LoginPage/LoginPage';
-import { ProtectedRoute } from './ProtectedRoute';
 
 // TODO: Fix with browser router
 const router = createHashRouter([
@@ -26,10 +25,10 @@ const router = createHashRouter([
 
 export function App() {
   return (
-    <React.StrictMode>
+    // <React.StrictMode>
       <RootStoreProvider>
         <RouterProvider router={router} />
       </RootStoreProvider>
-    </React.StrictMode>
+    // </React.StrictMode>
   );
 }

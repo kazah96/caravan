@@ -9,13 +9,6 @@ import os
 
 stage = os.environ.get("STAGE", "dev")
 
-# player_manager = PlayerManager()
-
-player_map = {
-    # "369cc5ad-fe41-4ad7-85f5-f739195ad697": Players.PLAYER_1,
-    # "ea5739ca-2fda-4bc5-b244-def44f82c122": Players.PLAYER_2,
-}
-
 
 class ConnectionManager:
     def __init__(self):

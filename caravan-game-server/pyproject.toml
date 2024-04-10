@@ -11,6 +11,8 @@ fastapi = "^0.110.1"
 uvicorn = {extras = ["standard"], version = "^0.29.0"}
 websockets = "^12.0"
 json-fix = "^1.0.0"
+blinker = "^1.7.0"
+pydantic = "^2.6.4"
 
 
 [build-system]

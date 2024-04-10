@@ -173,7 +173,6 @@ class Caravan:
 class GameEngine:
     def __init__(self) -> None:
         self.player_turn = Players.PLAYER_1
-
         self.caravans: Dict[str, Caravan] = {}
         self.current_hands: Dict[Players, List[Card]] = {}
         self.decks: Dict[Players, List[Card]] = {}
