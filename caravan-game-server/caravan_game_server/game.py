@@ -3,42 +3,6 @@ from typing import Dict, List
 from enum import Enum
 
 
-class Suit(Enum):
-    HEARTS = "Hearts"
-    DIAMONDS = "Diamonds"
-    CLUBS = "Clubs"
-    SPADES = "Spades"
-
-
-class Rank(Enum):
-    ACE = "Ace"
-    TWO = "2"
-    THREE = "3"
-    FOUR = "4"
-    FIVE = "5"
-    SIX = "6"
-    SEVEN = "7"
-    EIGHT = "8"
-    NINE = "9"
-    TEN = "10"
-    JACK = "Jack"
-    QUEEN = "Queen"
-    KING = "King"
-
-
-class PlayerMove(Enum):
-    PUT_CARD = "put_card"
-
-
-class Card:
-    def __init__(self, suit, rank):
-        self.suit = suit
-        self.rank = rank
-
-    def __str__(self):
-        return f"{self.rank.value} of {self.suit.value}"
-
-
 class PlayerManager:
     def __init__(self) -> None:
         self.handlers = {}
@@ -48,7 +12,7 @@ class PlayerManager:
     def handle_message(self, message: str):
         data = json.loads(message)
         handler = self.handlers[data["type"]]
-        
+
         print(handler)
 
         if handler:

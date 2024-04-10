@@ -10,6 +10,7 @@ python = "^3.12"
 fastapi = "^0.110.1"
 uvicorn = {extras = ["standard"], version = "^0.29.0"}
 websockets = "^12.0"
+json-fix = "^1.0.0"
 
 
 [build-system]
