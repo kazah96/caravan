@@ -1,0 +1,19 @@
+{
+  "put_card": {
+    "name": "test",
+    "data": {
+      "command_name": "put_card",
+      "data": {
+        "card": {
+          "suit": "DIAMONDS",
+          "rank": "ACE"
+        },
+        "caravan_name": "player_1_caravan_1",
+        "card_in_caravan": {
+          "suit": "DIAMONDS",
+          "rank": "ACE"
+        }
+      }
+    }
+  }
+}

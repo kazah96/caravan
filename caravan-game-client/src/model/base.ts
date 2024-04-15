@@ -39,7 +39,7 @@ export const MAP_VARIANT_TO_VIEW: Record<CardRank, string> = {
   TEN: '10',
   JACK: 'J',
   QUEEN: 'Q',
-  KING: 'Joker',
+  KING: 'K',
 };
 
 export const MAP_VARIANT_TO_POINTS: Record<CardRank, number> = {

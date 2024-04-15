@@ -1,7 +1,7 @@
 import json
 from tkinter import W
 from typing import Dict, List
-from caravan_game_server.game_engine import GameEngine, Players, PutCardCommand
+from caravan_game_server.caravan.game_engine import GameEngine, Players, PutCardCommand
 from caravan_game_server.model import Card, Rank, Suit
 from fastapi import FastAPI, WebSocket
 import os

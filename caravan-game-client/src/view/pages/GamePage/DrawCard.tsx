@@ -38,7 +38,7 @@ export function DrawCard(props: CardProps) {
     <div
       onClick={onClick}
       className={cn(
-        'border-2 select-none cursor-pointer border-gray-300 bg-white rounded-xl w-48 h-72 p-2 flex justify-between hover:border-blue-500',
+        'border-2 select-none cursor-pointer relative border-gray-300 bg-white rounded-xl w-48 h-72 p-2 flex justify-between hover:border-blue-500',
         currentColor,
         {
           'border-green-300 border-4': isSelected,

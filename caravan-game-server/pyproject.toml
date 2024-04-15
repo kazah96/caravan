@@ -13,6 +13,11 @@ websockets = "^12.0"
 json-fix = "^1.0.0"
 blinker = "^1.7.0"
 pydantic = "^2.6.4"
+python-socketio = {extras = ["asyncio-client"], version = "^5.11.2"}
+pytest = "^8.1.1"
+pytest-watch = "^4.2.0"
+ptw = "^1.0.1"
+pytest-asyncio = "^0.23.6"
 
 
 [build-system]

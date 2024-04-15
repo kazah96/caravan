@@ -11,7 +11,7 @@ export class RootStore {
 
   public apiStore = new ApiStore();
 
-  public gameStore = new GameStore(this.socketStore);
+  public gameStore = new GameStore();
 
   public lobbyStore = new LobbyStore(this.socketStore);
 }

@@ -1,42 +1,57 @@
-import { computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import { Caravan, Card, Players } from '@model/base';
 import { mapToObj } from 'remeda';
-import { WebsocketStore } from './api/WebsocketStore';
+import { io, Socket } from 'socket.io-client';
 
 type GameData = {
-  current_player: string;
+  current_player: Players;
+  hands: Record<string, Card[]>;
+  decks: Record<string, Card[]>;
+  state: number;
   current_turn: Players;
-  total_deck_count: number;
-  hand: Card[];
-  caravans: {
-    name: string;
-    cards: Card[];
-    which: string;
-  }[];
+  caravans: Record<
+    string,
+    {
+      name: string;
+      cards: Card[];
+      which: string;
+    }
+  >;
 };
 
 type BaseClientSocketMessage<TType, TPayload> = {
-  type: TType;
-  payload: TPayload;
+  name: TType;
+  data: TPayload;
 };
 
 type PutCardActionMessage = BaseClientSocketMessage<
-  'PUT_CARD_ACTION',
+  'test',
   {
-    card: Card;
-    caravanName: string;
+    command_name: 'put_card';
+    data: {
+      card: Card;
+      caravan_name: string;
+    };
   }
 >;
 
 type ClientSocketMessage = PutCardActionMessage;
 
 export class GameStore {
-  constructor(private readonly socket: WebsocketStore) {
+  constructor() {
     makeObservable(this);
 
-    this.socket.socket?.addEventListener('open', () => this.initGame());
-    this.socket.socket?.addEventListener('message', data => this.handleSocketMessage(data));
+    // this.socket.on('connection', () => this.initGame());
+    this.socket.on('message', data => this.handleSocketMessage(data));
+
+    // this.socket.socket?.addEventListener('open', () => this.initGame());
+    // this.socket.socket?.addEventListener('message', data => this.handleSocketMessage(data));
   }
+
+  socket: Socket = io('http://localhost:8000', {
+    path: '/ws/socket.io',
+    transports: ['websocket'],
+  });
 
   @observable public myCaravans: Record<string, Caravan> = {};
 
@@ -50,8 +65,6 @@ export class GameStore {
 
   @observable public currentTurn: Players = 'player1';
 
-  @observable public totalDeckCount = 0;
-
   private initGame() {
     this.isGameInitialized = true;
   }
@@ -61,38 +74,50 @@ export class GameStore {
     return this.myPlayer === this.currentTurn;
   }
 
-  public handleSocketMessage(data: MessageEvent<string>) {
-    const dataJson = JSON.parse(data.data) as { type: string; payload: unknown };
-
-    if (dataJson.type === 'UPDATE_GAME_DATA') {
-      this.handleUpdateGameData(dataJson.payload);
+  @action.bound
+  public handleSocketMessage(data: unknown) {
+    const dataJson = JSON.parse(data as string) as {
+      player_side: Players;
+      name: string;
+      payload: unknown;
+    };
+    switch (dataJson.name) {
+      case 'acknowledge_player':
+        this.myPlayer = dataJson.player_side as Players;
+        break;
+      case 'update_game_state':
+        if (!this.isGameInitialized) {
+          this.isGameInitialized = true;
+        }
+        this.handleUpdateGameData(dataJson.payload);
+        break;
+      default:
+        break;
     }
   }
 
   public sendSocketMessage(data: ClientSocketMessage) {
-    this.socket.socket?.send(JSON.stringify(data));
+    this.socket.emit('message', JSON.stringify(data));
   }
 
+  @action.bound
   private handleUpdateGameData(payload: unknown) {
     const gameData = payload as GameData;
-
     const myCaravans = mapToObj(
-      gameData.caravans.filter(caravan => caravan.which === gameData.current_player),
+      Object.values(gameData.caravans).filter(caravan => caravan.which === this.myPlayer),
       caravan => [caravan.name, caravan],
     );
 
-    this.myPlayer = gameData.current_player as Players;
-
     this.myCaravans = myCaravans;
+    this.myPlayer = gameData.current_player;
 
     const enemyCaravans = mapToObj(
-      gameData.caravans.filter(caravan => caravan.which !== gameData.current_player),
+      Object.values(gameData.caravans).filter(caravan => caravan.which !== this.myPlayer),
       caravan => [caravan.name, caravan],
     );
 
     this.currentTurn = gameData.current_turn;
     this.enemyCaravans = enemyCaravans;
-    this.totalDeckCount = gameData.total_deck_count;
-    this.myHand = gameData.hand;
+    this.myHand = gameData.hands[this.myPlayer];
   }
 }

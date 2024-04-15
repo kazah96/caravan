@@ -2,7 +2,7 @@ import { action, makeObservable, observable } from 'mobx';
 import { v4 } from 'uuid';
 import { EventEmitter } from 'events';
 
-const TEST_API_URL = 'ws://localhost:8000/ws';
+const TEST_API_URL = 'localhost:8000';
 
 const getClientID = () => {
   const clientID = window.localStorage.getItem('clientID');
