@@ -1,12 +1,16 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import * as R from 'remeda';
 import { useRootStore } from '@hooks/useRootStore';
 import cn from 'classnames';
 import { DrawCard } from './DrawCard';
-import { Card, MAP_VARIANT_TO_POINTS } from '../../../model/base';
+import { Card } from '../../../model/base';
+import { calculateCaravanStrength, canPutCard } from './utils';
 
 const GamePage = observer(function GamePage() {
   const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>();
@@ -15,6 +19,13 @@ const GamePage = observer(function GamePage() {
   const enemyCaravansList = Object.values(gameStore.enemyCaravans);
   const myCaravansList = Object.values(gameStore.myCaravans);
 
+  if (gameStore.gameState === 'win') {
+    return <div className="text-9xl">WIN!</div>;
+  }
+  if (gameStore.gameState === 'lose') {
+    return <div className="text-9xl">LOSE!</div>;
+  }
+
   return (
     <main
       className={cn('w-full h-screen flex flex-col p-6 content-between', {
@@ -22,9 +33,12 @@ const GamePage = observer(function GamePage() {
       })}
     >
       <div
-        className={cn('fixed top-[50%] select-none left-[40%] z-10 opacity-0 text-7xl font-bold ', {
-          your_turn: gameStore.isMyTurn,
-        })}
+        className={cn(
+          'fixed top-[50%] select-none pointer-events-none left-[40%] z-10 opacity-0 text-7xl font-bold ',
+          {
+            your_turn: gameStore.isMyTurn,
+          },
+        )}
       >
         ВАШ ХОД
       </div>
@@ -40,8 +54,11 @@ const GamePage = observer(function GamePage() {
           <SingleCaravan
             name={value.name}
             key={value.name}
-            canAddCard={value.cards.length > 0}
-            selectedCard={selectedCardIndex ? gameStore.myHand[selectedCardIndex] : undefined}
+            isMyTurn={gameStore.isMyTurn}
+            areCaravansFilled={value.cards.length > 0}
+            selectedCard={
+              R.isNumber(selectedCardIndex) ? gameStore.myHand[selectedCardIndex] : undefined
+            }
             onCardClick={index => handleCaravanClick(value.name, index)}
             cards={value.cards}
           />
@@ -53,15 +70,17 @@ const GamePage = observer(function GamePage() {
           <SingleCaravan
             key={value.name}
             name={value.name}
-            canAddCard={
-              value.cards.length === 0 ||
-              myCaravansList
-                .filter(caravan => caravan.name !== value.name)
-                .every(caravan => caravan.cards.length > 0)
+            isMyTurn={gameStore.isMyTurn}
+            areCaravansFilled={myCaravansList
+              .filter(caravan => caravan.name !== value.name)
+              .every(caravan => caravan.cards.length > 0)}
+            selectedCard={
+              R.isNumber(selectedCardIndex) ? gameStore.myHand[selectedCardIndex] : undefined
             }
-            selectedCard={selectedCardIndex ? gameStore.myHand[selectedCardIndex] : undefined}
             onCardClick={index => handleCaravanClick(value.name, index)}
             cards={value.cards}
+            dropCaravan={() => gameStore.sendDropcaravanMessage(value.name)}
+            isMyCaravan
           />
         ))}
       </div>
@@ -78,6 +97,15 @@ const GamePage = observer(function GamePage() {
         <div className="ms-16 text-2xl border-2 select-none cursor-pointer border-gray-300 bg-white rounded-xl w-48 h-72 p-2 flex justify-between">
           Ещё карт: {gameStore.totalDeckCount}
         </div>
+        <div id="button-holder" className="ms-4 p-4">
+          <button
+            disabled={!gameStore.isMyTurn || !R.isNumber(selectedCardIndex)}
+            onClick={() => gameStore.sendDropCardMessage(selectedCardIndex)}
+            className="text-2xl border-2 border-gray-400 rounded-xl p-4 cursor-pointer hover:bg-slate-300 disabled:opacity-30"
+          >
+            Сбросить выбранную карту
+          </button>
+        </div>
       </div>
     </main>
   );
@@ -93,18 +121,13 @@ const GamePage = observer(function GamePage() {
           data: {
             card,
             caravan_name: caravanName,
+            card_in_caravan: caravanCardIndex,
           },
         },
       });
 
       setSelectedCardIndex(null);
     }
-
-    // if (R.isNumber(selectedCardIndex)) {
-    //   setHand(hand.filter((_, i) => i !== selectedCardIndex));
-    //   setSelectedCardIndex(null);
-    //   setCaravans({ ...caravans, [caravan]: [...caravans[caravan], card] });
-    // }
   }
 
   function handleClickHandCard(index: number) {
@@ -112,79 +135,100 @@ const GamePage = observer(function GamePage() {
   }
 });
 
-function calculateCaravanStrength(cards: Card[]) {
-  const totalPoints: number[] = [];
-
-  cards.forEach(card => {
-    const points = MAP_VARIANT_TO_POINTS[card.rank];
-
-    if (card.rank === 'KING' && totalPoints.length > 0) {
-      totalPoints[totalPoints.length - 1] *= 2;
-    } else {
-      totalPoints.push(points);
-    }
-  });
-
-  return R.sumBy(totalPoints, item => item);
-}
-
 function SingleCaravan(props: {
   name: string;
   cards: Card[];
-  canAddCard: boolean;
+  areCaravansFilled: boolean;
   onCardClick: (index: number) => void;
   selectedCard?: Card;
+  isMyTurn: boolean;
+  dropCaravan?: () => void;
+  isMyCaravan?: boolean;
 }) {
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [showSuggestedCard, setShowSuggestedCard] = useState(false);
 
-  const { cards, onCardClick, name, selectedCard, canAddCard } = props;
+  const {
+    cards,
+    isMyTurn,
+    dropCaravan,
+    onCardClick,
+    name,
+    selectedCard,
+    areCaravansFilled,
+    isMyCaravan,
+  } = props;
+
+  const canAdd =
+    selectedCard !== undefined &&
+    canPutCard(selectedCard, hoveredCard, cards, isMyCaravan ?? false, areCaravansFilled);
+
+  const cardHighlight = canAdd ? 'green' : 'red';
   return (
     <div className={cn('min-w-56 bg-slate-100 relative flex-1')}>
-      <h1 className="text-2xl">{name}</h1>
-      <div>Strength: {calculateCaravanStrength(cards)}</div>
-
-      <div
-        className="flex-1 flex flex-col"
-        onMouseEnter={() => setShowSuggestedCard(true)}
-        onMouseLeave={() => setShowSuggestedCard(false)}
-      >
-        {cards.length === 0 && (
+      <h1 className="text-2xl">
+        {name}{' '}
+        {dropCaravan && (
           <button
-            className={cn(
-              'border-4 select-none cursor-pointer border-gray-300 bg-white rounded-xl w-48 h-72 p-2 flex justify-between',
-              { 'hover:border-red-300': !canAddCard },
-            )}
-            onClick={() => {
-              if (canAddCard) {
-                onCardClick(0);
-              }
-            }}
-          />
-        )}
-
-        {cards.map((item, key) => (
-          <div key={key} className="first:-mt-0 -mt-64 z-1" style={{ marginLeft: key * 20 }}>
-            <DrawCard
-              onClick={() => {
-                if (canAddCard) {
-                  onCardClick(key);
-                }
-              }}
-              card={item}
-            />
-          </div>
-        ))}
-
-        {selectedCard && showSuggestedCard && (
-          <div
-            className={cn('first:-mt-0 mt-4 z-99 pointer-events-none absolute opacity-60', {
-              'mt-0': cards.length === 0,
-            })}
-            style={{ marginLeft: cards.length * 20 }}
+            disabled={!isMyTurn || cards.length === 0}
+            className="border-2 border-gray-400 px-2 rounded-md ms-2 disabled:opacity-25"
+            onClick={dropCaravan}
           >
-            <DrawCard onClick={() => onCardClick(0)} card={selectedCard} />
-          </div>
+            Сбросить
+          </button>
         )}
+      </h1>
+      <div>Strength: {calculateCaravanStrength(cards)}</div>
+      <div className="flex-1 flex flex-col">
+        <div
+          className={cn(
+            'w-48 h-72 relative border-2 cursor-pointer border-gray-300 bg-white rounded-xl ',
+            {
+              'border-red-400':
+                showSuggestedCard && hoveredCard === null && selectedCard !== undefined && !canAdd,
+              'border-green-400':
+                showSuggestedCard && hoveredCard === null && selectedCard !== undefined && canAdd,
+            },
+          )}
+          onMouseEnter={() => setShowSuggestedCard(true)}
+          onMouseLeave={() => setShowSuggestedCard(false)}
+          onClick={() => {
+            if (canAdd) {
+              onCardClick(0);
+            }
+          }}
+        >
+          {cards.map((item, key) => (
+            <div
+              key={key}
+              className="first:-mt-0 -mt-64 z-1"
+              style={{ marginLeft: key * 30 }}
+              onMouseEnter={() => setHoveredCard(key)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
+              <DrawCard
+                onClick={() => {
+                  if (canAdd) {
+                    onCardClick(key);
+                  }
+                }}
+                highlight={hoveredCard !== null ? cardHighlight : undefined}
+                card={item}
+              />
+            </div>
+          ))}
+          {/* 
+          {selectedCard && showSuggestedCard && (
+            <div
+              className={cn('z-99 top-0 left-0 pointer-events-none absolute opacity-60', {
+                'mt-0': cards.length === 0,
+              })}
+              style={{ marginLeft: cards.length * 20 }}
+            >
+              <DrawCard onClick={() => onCardClick(0)} card={selectedCard} />
+            </div>
+          )} */}
+        </div>
       </div>
     </div>
   );

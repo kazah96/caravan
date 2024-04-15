@@ -32,8 +32,17 @@ class Caravan(BaseModel, ABC):
         pass
 
     @abstractmethod
-    def count_points(self):
+    def count_points(self) -> int:
         pass
+    
+    @abstractmethod
+    def is_in_bounds(self) -> bool:
+        pass
+
+    @abstractmethod
+    def clear_caravan(self):
+        pass
+
 
 
 class Suit(Enum):

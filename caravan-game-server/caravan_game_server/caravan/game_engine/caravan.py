@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Optional, Union
 from caravan_game_server.caravan.game_engine.model import (
     POINT_MAP,
@@ -8,6 +9,7 @@ from caravan_game_server.caravan.game_engine.model import (
 )
 
 
+from caravan_game_server.caravan.game_engine.settings import CARAVAN_SALE_MAX, CARAVAN_SALE_MIN
 from caravan_game_server.caravan.game_engine.utils import (
     check_is_point_card,
     get_last_element,
@@ -15,11 +17,36 @@ from caravan_game_server.caravan.game_engine.utils import (
 from caravan_game_server.caravan.model import PlayerSides
 
 
+def remove_card_with_linked(cards: list[Card], index: int):
+    output = []
+
+    flag = False
+    for i, card in enumerate(cards):
+        if i < index:
+            output.append(card)
+            continue
+
+        if i > index:
+            if check_is_point_card(card):
+                flag = True
+
+        if flag:
+            output.append(card)
+
+    return output
+
+
+class CaravanNumber(Enum):
+    ONE = 0
+    TWO = 1
+    THREE = 2
+
 class CaravanImplementation(Caravan):
     which: PlayerSides
     cards: list[Card] = []
     current_direction: Optional[Direction] = None
     name: str = ""
+    type: CaravanNumber
 
     last_caravan_point_card: Optional[Card] = None
     last_caravan_card: Optional[Card] = None
@@ -40,35 +67,13 @@ class CaravanImplementation(Caravan):
                 | Rank.NINE
                 | Rank.TEN
             ):
-                if self.last_caravan_point_card:
-                    if self.last_caravan_point_card.suit == card.suit:
-                        pass
-                    elif (
-                        self.current_direction == Direction.ASCENDING
-                        and POINT_MAP[self.last_caravan_point_card.rank]
-                        > POINT_MAP[card.rank]
-                    ):
-                        raise ValueError("Card is lower than last, in ascending")
-                    elif (
-                        self.current_direction == Direction.DESCENDING
-                        and POINT_MAP[self.last_caravan_point_card.rank]
-                        < POINT_MAP[card.rank]
-                    ):
-                        raise ValueError("Card is greater than last, in descending")
-
-                    self.current_direction = (
-                        Direction.ASCENDING
-                        if POINT_MAP[self.last_caravan_point_card.rank]
-                        < POINT_MAP[card.rank]
-                        else Direction.DESCENDING
-                    )
-
                 self.last_caravan_point_card = card
                 self.cards.append(card)
             case Rank.JACK:
                 index = index if index != None else len(self.cards) - 1
-                if len(self.cards) >= index - 1:
-                    self.cards.pop(index)
+
+                self.cards = remove_card_with_linked(self.cards, index)
+
             case Rank.QUEEN:
                 self.current_direction = (
                     Direction.ASCENDING
@@ -81,7 +86,12 @@ class CaravanImplementation(Caravan):
                 if index == None:
                     self.cards.append(card)
                 else:
-                    self.cards.insert(index, card)
+                    self.cards.insert(index + 1, card)
+
+    def clear_caravan(self):
+        self.cards = []
+        self.last_caravan_card = None
+        self.last_caravan_point_card = None
 
     def count_points(self):
         points_list: list[int] = []
@@ -94,6 +104,10 @@ class CaravanImplementation(Caravan):
                 points_list[len(points_list) - 1] *= 2
 
         return sum(points_list)
+    
+    def is_in_bounds(self):
+        points = self.count_points()
+        return points >= CARAVAN_SALE_MIN and points < CARAVAN_SALE_MAX
 
     def __str__(self) -> str:
         return f"{self.which.value}'s hand: {self.cards}"

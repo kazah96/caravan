@@ -10,11 +10,19 @@ export default defineConfig({
   base: '',
   server: {
     port: 8080,
+    host: '0.0.0.0',
+    proxy: {
+      '/ws/socket.io/': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
+    },
   },
   build: {
     rollupOptions: {},
   },
-
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

@@ -57,3 +57,17 @@ export const MAP_VARIANT_TO_POINTS: Record<CardRank, number> = {
   QUEEN: 0,
   KING: 0,
 };
+
+export const POINT_CARD_RANKS = [
+  'ACE',
+  'ONE',
+  'TWO',
+  'THREE',
+  'FOUR',
+  'FIVE',
+  'SIX',
+  'SEVEN',
+  'EIGHT',
+  'NINE',
+  'TEN',
+];

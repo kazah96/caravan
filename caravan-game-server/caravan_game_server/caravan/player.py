@@ -2,11 +2,12 @@ from __future__ import annotations
 from blinker import Signal
 
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import Annotated, Union
 from blinker import signal
 from caravan_game_server.caravan.game_engine.commands import (
-    CaravanCommand,
     ClientCommand,
+    ClientDropCaravanCommand,
+    ClientDropCardCommand,
     ClientPutCardCommand,
 )
 from caravan_game_server.caravan.game_engine.model import GameStateData
@@ -17,7 +18,7 @@ from caravan_game_server.caravan.server_commands import (
 )
 from caravan_game_server.model.network import NetworkPayload
 from caravan_game_server.network.network_player import NetworkPlayer
-from pydantic import BaseModel, TypeAdapter, ValidationError
+from pydantic import BaseModel, Field, TypeAdapter, ValidationError
 
 
 class CaravanPlayer:
@@ -45,7 +46,13 @@ class CaravanPlayer:
         )
 
     def _handle_recieve_message(self, message: NetworkPayload):
-        adapter = TypeAdapter(Union[ClientPutCardCommand, ClientPutCardCommand])
+
+        Shape = Union[
+            ClientDropCaravanCommand, ClientPutCardCommand, ClientDropCardCommand
+        ]
+        AnnotatedShape = Annotated[Shape, Field(discriminator="command_name")]
+
+        adapter = TypeAdapter(AnnotatedShape)
         print("handle_recieve_message")
         try:
             data: ClientCommand = adapter.validate_python(message.data)  # type: ignore
