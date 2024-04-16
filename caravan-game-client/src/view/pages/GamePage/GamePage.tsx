@@ -19,19 +19,17 @@ const GamePage = observer(function GamePage() {
   const enemyCaravansList = Object.values(gameStore.enemyCaravans);
   const myCaravansList = Object.values(gameStore.myCaravans);
 
-  if (gameStore.gameState === 'win') {
-    return <div className="text-9xl">WIN!</div>;
-  }
-  if (gameStore.gameState === 'lose') {
-    return <div className="text-9xl">LOSE!</div>;
-  }
-
   return (
     <main
       className={cn('w-full h-screen flex flex-col p-6 content-between', {
-        'pointer-events-none': !gameStore.isMyTurn,
+        'pointer-events-none': !gameStore.isMyTurn || gameStore.gameState !== 'playing',
       })}
     >
+      {gameStore.gameState !== 'playing' && (
+        <div className="text-9xl fixed top-[50%] left-[40%]  z-50 bg-yellow-200 p-20">
+          {gameStore.gameState}
+        </div>
+      )}
       <div
         className={cn(
           'fixed top-[50%] select-none pointer-events-none left-[40%] z-10 opacity-0 text-7xl font-bold ',
