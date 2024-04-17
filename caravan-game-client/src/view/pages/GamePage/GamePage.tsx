@@ -7,19 +7,27 @@ import { observer } from 'mobx-react-lite';
 import { useRootStore } from '@hooks/useRootStore';
 import cn from 'classnames';
 import { useNavigate } from 'react-router-dom';
+import { FalloutWindow } from '@components/ui/FalloutWindow';
 
 const GamePage = observer(function GamePage() {
   const { gameStore } = useRootStore();
   const navigate = useNavigate();
 
   return (
-    <main className={cn('w-full h-screen flex justify-center items-center p-6 ', {})}>
-      <div className="border-2 border-gray-200 rounded-md p-4 flex flex-col items-center justify-center">
-        <h1 className="text-2xl">Caravan game</h1>
-        <button className="text-blue-500 hover:underline cursor-pointer" onClick={handleCreateRoom}>
-          Create room
-        </button>
-      </div>
+    <main className={cn('w-full h-screen flex justify-center items-center p-6 fallout-font', {})}>
+      <FalloutWindow>
+        <div className="flex flex-col items-center mt-6">
+          <h1 className="text-4xl text-fallout-500 px-4 mb-2">Караван</h1>
+          <button
+            className="hover:underline cursor-pointer text-2xl bg-fallout-500 px-4 b-shadow"
+            onClick={() => {
+              handleCreateRoom();
+            }}
+          >
+            Создать комнату
+          </button>
+        </div>
+      </FalloutWindow>
     </main>
   );
 

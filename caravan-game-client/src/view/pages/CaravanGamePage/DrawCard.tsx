@@ -40,7 +40,7 @@ export function DrawCard(props: CardProps) {
     <div
       onClick={onClick}
       className={cn(
-        'border-2 select-none cursor-pointer relative border-gray-300 bg-white rounded-xl w-36 h-52 p-2 flex justify-between ',
+        'select-none opacity-100 cursor-pointer relative card-shadow  bg-fallout-200 rounded-xl w-32 h-52 p-2 flex justify-between ',
         currentColor,
         {
           'hover:border-blue-500 border-2': highlight === 'blue',

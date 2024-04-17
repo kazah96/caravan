@@ -2,6 +2,13 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      colors: {
+        fallout: {
+          200: 'rgb(255, 239, 192)',
+          300: 'rgb(255, 228, 147)',
+          500: 'rgb(255, 208, 66)',
+        },
+      },
       flex: {
         0: '0 0 auto',
       },

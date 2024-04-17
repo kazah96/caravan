@@ -10,6 +10,10 @@ import { useRootStore } from '@hooks/useRootStore';
 import cn from 'classnames';
 import { useParams } from 'react-router-dom';
 import { GameState } from '@store/caravanStore/CaravanStore';
+import { PipBoyWindow } from '@components/ui/PipBoyWindow';
+import CogIcon from '@assets/icons/cogwheel.svg?react';
+import { Modal } from '@components/ui/utils/modal';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { DrawCard } from './DrawCard';
 import { Card } from '../../../model/base';
 import { calculateCaravanStrength, canPutCard } from './utils';
@@ -35,38 +39,23 @@ const CaravanGamePage = observer(function GamePage() {
       </div>
     );
   }
-  if (!caravanStore.isGameInitialized) {
-    return (
-      <div className="text-xl fixed top-[50%] left-[40%]  z-50 bg-yellow-200 p-20">
-        Wait for game
-      </div>
-    );
-  }
+
+  const showAwaitPlayerModal =
+    !caravanStore.isGameInitialized || caravanStore.currentState === GameState.WAITING;
+  const showLoseModal = caravanStore.gameState === 'lose';
+  const showWinModal = caravanStore.gameState === 'win';
 
   return (
     <main
-      className={cn('w-full h-screen flex flex-col p-4 content-between', {
-        'pointer-events-none': !caravanStore.isMyTurn || caravanStore.gameState !== 'playing',
+      className={cn('w-full h-screen flex flex-col py-8 px-10 content-between font-[Monofonto]', {
+        // 'pointer-events-none': !caravanStore.isMyTurn || caravanStore.gameState !== 'playing',
       })}
     >
-      {caravanStore.currentState === GameState.WAITING && (
-        <div className="fixed top-[50%] left-[40%]  z-50 bg-yellow-200 p-20">
-          <h1 className="text-xl mb-2">{caravanStore.gameState} Waiting for player</h1>
-          <h2 className="text-lg">Use this url to connect to the game:</h2>
-          <h2 className="text-lg">{window.location.href}</h2>
-        </div>
-      )}
-      {(caravanStore.currentState === GameState.PLAYER_1_WON ||
-        caravanStore.currentState === GameState.PLAYER_2_WON) && (
-        <div className="fixed top-[50%] left-[40%]  z-50 bg-yellow-200 p-20">
-          <h1 className="text-2xl mb-2">{caravanStore.gameState}</h1>
-        </div>
-      )}
       <div
         className={cn(
-          'fixed top-[50%] select-none pointer-events-none left-[40%] z-10 opacity-0 text-7xl font-bold ',
+          'fixed select-none pointer-events-none center-absolute z-10 opacity-0 text-7xl font-bold text-fallout-200 fallout-menu-background',
           {
-            your_turn: caravanStore.isMyTurn,
+            your_turn: caravanStore.gameState === 'playing' && caravanStore.isMyTurn,
           },
         )}
       >
@@ -77,66 +66,105 @@ const CaravanGamePage = observer(function GamePage() {
           Ожидание игрока
         </div>
       )}
-      {/* {caravanStore.isMyTurn && <h1>I CAN MOVE</h1>} */}
-      <h1 className="text-xl mb-2">Караваны противника</h1>
-      <div className="flex flex-1 bg-slate-100 p-4">
-        {enemyCaravansList.map(value => (
-          <SingleCaravan
-            name={value.name}
-            key={value.name}
-            isMyTurn={caravanStore.isMyTurn}
-            areCaravansFilled={value.cards.length > 0}
-            selectedCard={
-              R.isNumber(selectedCardIndex) ? caravanStore.myHand[selectedCardIndex] : undefined
-            }
-            onCardClick={index => handleCaravanClick(value.name, index)}
-            cards={value.cards}
-          />
-        ))}
-      </div>
-      <h1 className="text-xl my-4">Мои караваны</h1>
-      <div className="flex flex-1 bg-slate-100 p-4">
-        {myCaravansList.map(value => (
-          <SingleCaravan
-            key={value.name}
-            name={value.name}
-            isMyTurn={caravanStore.isMyTurn}
-            areCaravansFilled={myCaravansList
-              .filter(caravan => caravan.name !== value.name)
-              .every(caravan => caravan.cards.length > 0)}
-            selectedCard={
-              R.isNumber(selectedCardIndex) ? caravanStore.myHand[selectedCardIndex] : undefined
-            }
-            onCardClick={index => handleCaravanClick(value.name, index)}
-            cards={value.cards}
-            dropCaravan={() => caravanStore.sendDropcaravanMessage(value.name)}
-            isMyCaravan
-          />
-        ))}
-      </div>
-      <div className="bg-slate-200 flex relative p-4">
-        {caravanStore.myHand.map((item, key) => (
-          <div key={item.rank + item.suit} className="first:-ms-0 -ms-24 z-0">
-            <DrawCard
-              isSelected={selectedCardIndex === key}
-              card={item}
-              onClick={() => handleClickHandCard(key)}
-            />
+      <div className="flex mb-6">
+        <PipBoyWindow title="КАРАВАНЫ СОПЕРНИКА">
+          <div className="flex justify-around">
+            {enemyCaravansList.map(value => (
+              <SingleCaravan
+                name={value.name}
+                key={value.name}
+                isMyTurn={caravanStore.isMyTurn}
+                areCaravansFilled={value.cards.length > 0}
+                selectedCard={
+                  R.isNumber(selectedCardIndex) ? caravanStore.myHand[selectedCardIndex] : undefined
+                }
+                onCardClick={index => handleCaravanClick(value.name, index)}
+                cards={value.cards}
+                headerPosition="bottom"
+              />
+            ))}
           </div>
-        ))}
-        <div className="ms-16 text-lg border-2 select-none cursor-pointer border-gray-300 bg-white rounded-xl w-36 h-52 p-2 flex justify-between">
-          Ещё карт: {caravanStore.totalDeckCount}
-        </div>
-        <div id="button-holder" className="ms-4">
-          <button
-            disabled={!caravanStore.isMyTurn || !R.isNumber(selectedCardIndex)}
-            onClick={() => caravanStore.sendDropCardMessage(selectedCardIndex)}
-            className="text-lg border-2 border-gray-400 rounded-xl p-4 cursor-pointer hover:bg-slate-300 disabled:opacity-30"
-          >
-            Сбросить выбранную карту
-          </button>
-        </div>
+        </PipBoyWindow>
       </div>
+      <PipBoyWindow title="МОИ КАРАВАНЫ">
+        <div
+          className={cn('flex justify-around', {
+            'pointer-events-none': !caravanStore.isMyTurn || caravanStore.gameState !== 'playing',
+          })}
+        >
+          {myCaravansList.map(value => (
+            <SingleCaravan
+              key={value.name}
+              name={value.name}
+              isMyTurn={caravanStore.isMyTurn}
+              areCaravansFilled={myCaravansList
+                .filter(caravan => caravan.name !== value.name)
+                .every(caravan => caravan.cards.length > 0)}
+              selectedCard={
+                R.isNumber(selectedCardIndex) ? caravanStore.myHand[selectedCardIndex] : undefined
+              }
+              onCardClick={index => handleCaravanClick(value.name, index)}
+              cards={value.cards}
+              dropCaravan={() => caravanStore.sendDropcaravanMessage(value.name)}
+              isMyCaravan
+              headerPosition="top"
+            />
+          ))}
+        </div>
+      </PipBoyWindow>
+      <PipBoyWindow
+        className="mt-8"
+        buttons={[
+          {
+            callback: () => caravanStore.sendDropCardMessage(selectedCardIndex),
+            label: 'Сбросить карту',
+            disabled: !caravanStore.isMyTurn || !R.isNumber(selectedCardIndex),
+          },
+          { callback: () => {}, label: 'Покинуть игру' },
+        ]}
+      >
+        <div
+          className={cn('flex relative p-4 justify-center', {
+            'pointer-events-none': !caravanStore.isMyTurn || caravanStore.gameState !== 'playing',
+          })}
+        >
+          {caravanStore.myHand.map((item, key) => (
+            <div key={item.rank + item.suit} className="first:-ms-0 -ms-24 z-0">
+              <DrawCard
+                isSelected={selectedCardIndex === key}
+                card={item}
+                onClick={() => handleClickHandCard(key)}
+              />
+            </div>
+          ))}
+          <div className="relative ms-16 text-lg border-4 border-fallout-300 select-none cursor-pointer rounded-xl w-36 h-52 flex justify-between">
+            <CogIcon style={{}} className="w-28 h-28 center-absolute" />
+            <span style={{}} className="center-absolute text-fallout-200 text-2xl">
+              {caravanStore.totalDeckCount}
+            </span>
+          </div>
+        </div>
+      </PipBoyWindow>
+      <Modal show={showAwaitPlayerModal} onHide={() => {}}>
+        <div className="flex flex-col items-center justify-center h-full">
+          <h1 className="text-4xl text-fallout-500 px-4 mb-2">Ожидание игрока</h1>
+          <CopyToClipboard text={window.location.href}>
+            <span className="text-lg text-fallout-500 border px-2 border-fallout-500 cursor-pointer hover:underline">
+              Скопировать ссылку для друга
+            </span>
+          </CopyToClipboard>
+        </div>
+      </Modal>
+      <Modal show={showLoseModal} onHide={() => {}}>
+        <div className="flex items-center justify-center h-full">
+          <h1 className="text-4xl text-fallout-500 px-4 mb-2">Вы проиграли</h1>
+        </div>
+      </Modal>
+      <Modal show={showWinModal} onHide={() => {}}>
+        <div className="flex items-center justify-center h-full">
+          <h1 className="text-4xl text-fallout-500 px-4 mb-2">Вы победили</h1>
+        </div>
+      </Modal>
     </main>
   );
 
@@ -164,6 +192,7 @@ function SingleCaravan(props: {
   isMyTurn: boolean;
   dropCaravan?: () => void;
   isMyCaravan?: boolean;
+  headerPosition?: 'top' | 'bottom';
 }) {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [showSuggestedCard, setShowSuggestedCard] = useState(false);
@@ -177,6 +206,7 @@ function SingleCaravan(props: {
     selectedCard,
     areCaravansFilled,
     isMyCaravan,
+    headerPosition,
   } = props;
 
   const canAdd =
@@ -185,23 +215,12 @@ function SingleCaravan(props: {
 
   const cardHighlight = canAdd ? 'green' : 'red';
   return (
-    <div className={cn('min-w-56 bg-slate-100 relative flex-1')}>
-      <h1 className="text-lg font-semibold mb-2">
-        {name}: <span className="text-blue-400 me-2">{calculateCaravanStrength(cards)}</span>
-        {dropCaravan && (
-          <button
-            disabled={!isMyTurn || cards.length === 0}
-            className="border-2 border-gray-400 px-2 rounded-md ms-2 disabled:opacity-25"
-            onClick={dropCaravan}
-          >
-            Сбросить
-          </button>
-        )}
-      </h1>
-      <div className="flex-1 flex flex-col">
+    <div className={cn('relative flex flex-col items-center')}>
+      {headerPosition === 'top' && getHeader()}
+      <div className="flex-1 flex flex-col mb-4">
         <div
           className={cn(
-            'w-36 h-52 relative border-2 cursor-pointer border-gray-300 bg-white rounded-xl ',
+            'w-32 h-52 relative border cursor-pointer border-fallout-300  rounded-xl ',
             {
               'border-red-400':
                 showSuggestedCard && hoveredCard === null && selectedCard !== undefined && !canAdd,
@@ -249,8 +268,26 @@ function SingleCaravan(props: {
           )} */}
         </div>
       </div>
+      {headerPosition === 'bottom' && getHeader()}
+      {dropCaravan && (
+        <button
+          disabled={!isMyTurn || cards.length === 0}
+          className="px-2 w-full mt-2 disabled:opacity-40 border border-fallout-500 text-fallout-500"
+          onClick={dropCaravan}
+        >
+          Сбросить караван
+        </button>
+      )}
     </div>
   );
+
+  function getHeader() {
+    return (
+      <h1 className="mb-2 font-thin text-fallout-500 font-[NewLetterGotic] flex items-center">
+        {name}: <span className="text-blue-400 ms-1">{calculateCaravanStrength(cards)}</span>
+      </h1>
+    );
+  }
 }
 
 export { CaravanGamePage };

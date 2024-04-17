@@ -4,7 +4,7 @@ type PageLayoutProps = {
 
 function PageLayout(props: PageLayoutProps) {
   const { children } = props;
-  return <div>{children}</div>;
+  return children;
 }
 
 export { PageLayout };
