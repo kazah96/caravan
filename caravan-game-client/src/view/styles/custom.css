@@ -63,6 +63,20 @@
 }
 
 @layer components {
+  .playing-card {
+    width: 60px;
+    height: 100px;
+  }
+  
+
+  @screen md {
+    .playing-card {
+      width: 112px;
+      height: 192px;
+    }
+  }
+
+
 
   .center-absolute {
     position: absolute;

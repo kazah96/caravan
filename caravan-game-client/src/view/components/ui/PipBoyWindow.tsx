@@ -1,7 +1,6 @@
 /* eslint-disable react/button-has-type */
-import { PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import cn from 'classnames';
-import React from 'react';
 
 type Props = PropsWithChildren<{
   title?: string;
@@ -17,13 +16,13 @@ function PipBoyWindow(props: Props) {
       <div className="flex h-6 w-full">
         <div className="border-t-fallout-500 border-l-fallout-500 border-l border-t h-full w-[20px]" />
         {title && (
-          <h2 className="-top-[12px] left-[24px] text-fallout-500 scale-y-125 text-xl px-2 -mt-3 font-[NewLetterGotic] tracking-wide">
+          <h2 className="-top-[12px] left-[24px] text-fallout-500 scale-y-125 md:text-xl px-2 -mt-3 font-[NewLetterGotic] tracking-wide">
             {title}
           </h2>
         )}
         <div className="border-t-fallout-500 border-r-fallout-500 border-r flex-1 border-t h-full w-[40px]" />
       </div>
-      <div className="p-4">{children}</div>
+      <div className="md:p-4">{children}</div>
 
       {buttons && (
         <div className="flex h-6 w-full">

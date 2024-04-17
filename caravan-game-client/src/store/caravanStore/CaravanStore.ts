@@ -146,7 +146,7 @@ export class CaravanStore {
   }
 
   public sendDropcaravanMessage(caravanName: string) {
-    this.api.post(`/caravan/${this.gameID}/put_card`, {
+    this.api.post(`/caravan/${this.gameID}/discard_caravan`, {
       caravan_name: caravanName,
     });
   }
