@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 from enum import Enum
 from telnetlib import GA
 from typing import Optional
@@ -37,6 +38,7 @@ class Game:
         self.joined_players: dict[PlayerSides, str] = {}
         self.state: GameState = GameState.WAITING
         self.game = GameEngine()
+        self.created_at = datetime.datetime.now()
 
         self._update_subscribers: list[asyncio.Event] = []
 

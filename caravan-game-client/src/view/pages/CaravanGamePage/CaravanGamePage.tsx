@@ -144,7 +144,6 @@ const CaravanGamePage = observer(function GamePage() {
     if (R.isNumber(selectedCardIndex)) {
       const card = caravanStore.myHand[selectedCardIndex];
 
-      console.log('Send');
       caravanStore.sendPutCardMessage(card, caravanName, caravanCardIndex);
 
       setSelectedCardIndex(null);
