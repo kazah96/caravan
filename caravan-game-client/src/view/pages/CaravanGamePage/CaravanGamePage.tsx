@@ -26,13 +26,13 @@ function generateRandomCard() {
   };
 }
 
-function generateRandomCards(number: number) {
-  const cards = [];
-  for (let i = 0; i < number; i += 1) {
-    cards.push(generateRandomCard());
-  }
-  return cards;
-}
+// function generateRandomCards(number: number) {
+//   const cards = [];
+//   for (let i = 0; i < number; i += 1) {
+//     cards.push(generateRandomCard());
+//   }
+//   return cards;
+// }
 
 const CaravanGamePage = observer(function GamePage() {
   const params = useParams();
