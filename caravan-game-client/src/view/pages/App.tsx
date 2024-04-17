@@ -4,8 +4,6 @@ import { RootStoreProvider } from '@hooks/useRootStore';
 import { Main } from '@pages/Main/Main';
 import '@styles/index.css';
 
-import { LoginForm } from './LoginPage/LoginPage';
-
 // TODO: Fix with browser router
 const router = createBrowserRouter([
   {
@@ -15,10 +13,6 @@ const router = createBrowserRouter([
       <Main />
       // </ProtectedRoute>
     ),
-  },
-  {
-    path: '/login',
-    element: <LoginForm />,
   },
 ]);
 

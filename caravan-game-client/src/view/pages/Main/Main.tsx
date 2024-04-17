@@ -6,7 +6,6 @@ import { NotificationsContainer } from '@components/Notifications/NotificationsC
 import { CaravanGamePage } from '../CaravanGamePage/CaravanGamePage';
 import { GamePage } from '../GamePage/GamePage';
 import { PageLayout } from './PageLayout';
-import { LobbyPage } from '../LobbyPage/LobbyPage';
 
 const Main = observer(function Main() {
   return (
@@ -15,7 +14,6 @@ const Main = observer(function Main() {
         <Route path="/" element={<Navigate to="/game" />} />
         <Route path="/game" element={<GamePage />} />
         <Route path="/caravan/:id" element={<CaravanGamePage />} />
-        <Route path="/lobby" element={<LobbyPage />} />
         <Route path="*" element={<div>404</div>} />
       </Routes>
       <NotificationsContainer />
