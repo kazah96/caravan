@@ -37,7 +37,7 @@ export function Modal(props: Props) {
 
   return (
     <div
-      className="w-screen h-screen fixed bg-gray-100 bg-opacity-60 z-50 top-0 left-0"
+      className="w-screen h-screen fixed bg-gray-500 bg-opacity-60 z-50 top-0 left-0"
       onClick={onHide}
     >
       <div className="flex justify-center items-center h-full z-[100]">
