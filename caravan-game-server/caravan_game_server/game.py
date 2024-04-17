@@ -1,7 +1,7 @@
 from enum import Enum
 from blinker import signal
 from caravan_game_server.caravan.game_engine.engine import GameEngine
-from caravan_game_server.caravan.game_engine.model import GameState
+from caravan_game_server.caravan.game_engine.model import CaravanState
 
 
 # class MainGameWorker:

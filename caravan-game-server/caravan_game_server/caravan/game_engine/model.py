@@ -77,7 +77,7 @@ class PlayerMove(Enum):
     PUT_CARD = "put_card"
 
 
-class GameState(Enum):
+class CaravanState(Enum):
     PLAYING = 0
     PLAYER_1_WON = 1
     PLAYER_2_WON = 2
@@ -98,8 +98,8 @@ class Card(BaseModel):
 
 
 class GameStateData(BaseModel):
-    current_player: PlayerSides
-    state: GameState
+    # current_player: PlayerSides
+    state: CaravanState
     hands: Dict[PlayerSides, List[Card]]
     decks: Dict[PlayerSides, List[Card]]
     caravans: Dict[str, Caravan]

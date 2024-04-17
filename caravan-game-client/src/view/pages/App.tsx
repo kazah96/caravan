@@ -1,5 +1,4 @@
-import React from 'react';
-import { RouterProvider, createHashRouter } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import { RootStoreProvider } from '@hooks/useRootStore';
 import { Main } from '@pages/Main/Main';
@@ -8,7 +7,7 @@ import '@styles/index.css';
 import { LoginForm } from './LoginPage/LoginPage';
 
 // TODO: Fix with browser router
-const router = createHashRouter([
+const router = createBrowserRouter([
   {
     path: '*',
     element: (
@@ -26,9 +25,9 @@ const router = createHashRouter([
 export function App() {
   return (
     // <React.StrictMode>
-      <RootStoreProvider>
-        <RouterProvider router={router} />
-      </RootStoreProvider>
+    <RootStoreProvider>
+      <RouterProvider router={router} />
+    </RootStoreProvider>
     // </React.StrictMode>
   );
 }

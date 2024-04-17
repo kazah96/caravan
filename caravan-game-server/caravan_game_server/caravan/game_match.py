@@ -5,7 +5,7 @@ from caravan_game_server.caravan.game_engine.commands import (
     ClientCommand,
 )
 from caravan_game_server.caravan.game_engine.engine import GameEngine
-from caravan_game_server.caravan.game_engine.model import GameState
+from caravan_game_server.caravan.game_engine.model import CaravanState
 from caravan_game_server.caravan.model import PlayerSides
 from caravan_game_server.network.network_player import NetworkPlayer
 from pydantic import BaseModel
@@ -76,7 +76,7 @@ class CaravanGameMatch:
         for player_side, player in self.players.items():
             player.notify_state_updated(self.game_engine.get_game_state_data(player_side))
 
-        if self.game_engine.game_state != GameState.PLAYING:
+        if self.game_engine.game_state != CaravanState.PLAYING:
             self.close_game()
 
     def make_game_over(self, winner: CaravanPlayer):

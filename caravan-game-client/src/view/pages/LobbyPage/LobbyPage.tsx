@@ -5,7 +5,7 @@ import { useRootStore } from '@hooks/useRootStore';
 import cn from 'classnames';
 
 const LobbyPage = observer(function GamePage() {
-  const { socketStore, gameStore, lobbyStore } = useRootStore();
+  const { socketStore, caravanStore: gameStore, lobbyStore } = useRootStore();
   const [roomName, setRoomName] = useState('');
 
   useEffect(() => {

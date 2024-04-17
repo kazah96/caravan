@@ -9,7 +9,7 @@ from caravan_game_server.caravan.game_engine.commands import CaravanCommand
 from caravan_game_server.caravan.game_engine.model import (
     Caravan,
     Card,
-    GameState,
+    CaravanState,
     GameStateData,
 )
 from caravan_game_server.caravan.game_engine.settings import HAND_SIZE, INITIAL_HAND_SIZE
@@ -40,11 +40,10 @@ class GameEngine:
         self.caravans: Dict[str, Caravan] = {}
         self.current_hands: Dict[PlayerSides, List[Card]] = {}
         self.decks: Dict[PlayerSides, List[Card]] = {}
-        self.game_state = GameState.PLAYING
+        self.game_state = CaravanState.PLAYING
 
-    def get_game_state_data(self, player_side: PlayerSides):
+    def get_game_state_data(self):
         game_state_data = GameStateData(
-            current_player=player_side,
             hands=self.current_hands,
             decks=self.decks,
             current_turn=self.player_turn,
@@ -109,7 +108,7 @@ class GameEngine:
 
             return caravans[0]
 
-        self.game_state = GameState.PLAYING
+        self.game_state = CaravanState.PLAYING
 
         player1_caravans = get_caravans_by_player(self.caravans, PlayerSides.PLAYER_1)
         player2_caravans = get_caravans_by_player(self.caravans, PlayerSides.PLAYER_2)
@@ -148,9 +147,9 @@ class GameEngine:
                 winners.append(PlayerSides.PLAYER_2)
 
         if count_win_for_player(winners, PlayerSides.PLAYER_1):
-            self.game_state = GameState.PLAYER_1_WON
+            self.game_state = CaravanState.PLAYER_1_WON
         if count_win_for_player(winners, PlayerSides.PLAYER_2):
-            self.game_state = GameState.PLAYER_2_WON
+            self.game_state = CaravanState.PLAYER_2_WON
 
 
 if __name__ == "__main__":
