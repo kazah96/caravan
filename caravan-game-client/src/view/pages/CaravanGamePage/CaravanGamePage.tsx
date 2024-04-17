@@ -47,6 +47,10 @@ const CaravanGamePage = observer(function GamePage() {
     }
   }, [caravanStore, params.id]);
 
+  useEffect(() => {
+    setSelectedCardIndex(null);
+  }, [caravanStore.currentTurn]);
+
   if (caravanStore.error) {
     return (
       <Modal show onHide={() => {}}>
