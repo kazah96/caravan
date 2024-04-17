@@ -72,7 +72,12 @@ export function SingleCaravan(props: {
           {cards.map((item, key) => (
             <div
               key={key}
-              className="first:-mt-0 z-1 hover:-translate-y-2 transition-all -mt-[78px] lg:-mt-40"
+              className={cn(`absolute first:-mt-0 z-1 hover:-translate-y-2 transition-all`)}
+              style={{
+                transform: `rotate(${key * 10 - (cards.length - 1) * 5}deg)`,
+                marginTop: `${key * 11}px`,
+                marginLeft: `${key * 7}px`,
+              }}
               // style={{ marginLeft: key * 2, marginTop: key * multiplier }}
               onMouseEnter={() => setHoveredCard(key)}
               onMouseLeave={() => setHoveredCard(null)}

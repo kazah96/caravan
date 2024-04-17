@@ -81,7 +81,17 @@ const CaravanGamePage = observer(function GamePage() {
         ВАШ ХОД
       </div>
       <div className="flex mb-6 flex-1">
-        <PipBoyWindow title="КАРАВАНЫ СОПЕРНИКА">
+        <PipBoyWindow
+          title={<span>КАРАВАНЫ СОПЕРНИКА </span>}
+          titleContent={
+            <span
+              className={cn('w-2 h-2 ms-2 rounded inline-block shadow', {
+                'bg-gray-500': caravanStore.isMyTurn,
+                'bg-green-500': !caravanStore.isMyTurn,
+              })}
+            />
+          }
+        >
           <div className="flex justify-around h-fit items-end">
             {enemyCaravansList.map(value => (
               <SingleCaravan
@@ -102,7 +112,17 @@ const CaravanGamePage = observer(function GamePage() {
         </PipBoyWindow>
       </div>
       <div className="flex-1 flex">
-        <PipBoyWindow title="МОИ КАРАВАНЫ">
+        <PipBoyWindow
+          title={<span>МОИ КАРАВАНЫ</span>}
+          titleContent={
+            <span
+              className={cn('w-2 h-2 ms-2 rounded inline-block shadow', {
+                'bg-gray-500': !caravanStore.isMyTurn,
+                'bg-green-500': caravanStore.isMyTurn,
+              })}
+            />
+          }
+        >
           <div
             className={cn('flex justify-around', {
               'pointer-events-none': !caravanStore.isMyTurn || caravanStore.gameState !== 'playing',

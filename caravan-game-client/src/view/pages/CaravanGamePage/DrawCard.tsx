@@ -47,7 +47,7 @@ export function DrawCard(props: CardProps) {
           'hover:border-green-500 border-2': highlight === 'green',
           '!border-green-300 border-2': isSelected,
         },
-        'select-none opacity-100 cursor-pointer relative card-shadow  border-transparent border-2 bg-fallout-200 rounded-md md:rounded-xl playing-card md:p-1 flex justify-between text-[10px] md:text-xl',
+        'transition hover:scale-125 select-none opacity-100 cursor-pointer relative card-shadow  border-transparent border-2 bg-fallout-200 rounded-md md:rounded-xl playing-card md:p-1 flex justify-between text-[10px] md:text-xl',
       )}
     >
       <div className="flex flex-col justify-start items-center">

@@ -3,22 +3,26 @@ import React, { PropsWithChildren } from 'react';
 import cn from 'classnames';
 
 type Props = PropsWithChildren<{
-  title?: string;
+  title?: React.ReactNode;
+  titleContent?: React.ReactNode;
   className?: string;
   buttons?: { label: string; callback: () => void; disabled?: boolean }[];
 }>;
 
 function PipBoyWindow(props: Props) {
-  const { children, title, buttons, className } = props;
+  const { children, titleContent, title, buttons, className } = props;
 
   return (
     <div className={cn('relative w-full fallout-menu-background', className)}>
       <div className="flex h-6 w-full">
         <div className="border-t-fallout-500 border-l-fallout-500 border-l border-t h-full w-[20px]" />
         {title && (
-          <h2 className="-top-[12px] left-[24px] text-fallout-500 scale-y-125 md:text-xl px-2 -mt-3 font-[NewLetterGotic] tracking-wide">
-            {title}
-          </h2>
+          <div className="-top-[12px] left-[24px] flex px-2 -mt-6 items-center">
+            <h2 className=" text-fallout-500 scale-y-125 md:text-xl  font-[NewLetterGotic] tracking-wide">
+              {title}
+            </h2>
+            {titleContent}
+          </div>
         )}
         <div className="border-t-fallout-500 border-r-fallout-500 border-r flex-1 border-t h-full w-[40px]" />
       </div>
