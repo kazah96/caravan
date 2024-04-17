@@ -38,7 +38,7 @@ export function SingleCaravan(props: {
 
   const cardHighlight = canAdd ? 'green' : 'red';
 
-  const multiplier = cards.length > 5 ? 20 : 20;
+  // const multiplier = cards.length > 5 ? 20 : 20;
   return (
     <div className={cn('relative flex flex-col items-center')}>
       {headerPosition === 'top' && getHeader()}

@@ -15,24 +15,24 @@ import CogIcon from '@assets/icons/cogwheel.svg?react';
 import { Modal } from '@components/ui/utils/modal';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { CARD_RANK_LIST, CARD_SUIT_LIST } from '@model/base';
+// import { CARD_RANK_LIST, CARD_SUIT_LIST } from '@model/base';
 import { DrawCard } from './DrawCard';
 import { SingleCaravan } from './SingleCaravan';
 
-function generateRandomCard() {
-  return {
-    suit: CARD_SUIT_LIST[Math.floor(Math.random() * CARD_SUIT_LIST.length) - 1],
-    rank: CARD_RANK_LIST[Math.floor(Math.random() * CARD_RANK_LIST.length) - 1],
-  };
-}
+// function generateRandomCard() {
+//   return {
+//     suit: CARD_SUIT_LIST[Math.floor(Math.random() * CARD_SUIT_LIST.length) - 1],
+//     rank: CARD_RANK_LIST[Math.floor(Math.random() * CARD_RANK_LIST.length) - 1],
+//   };
+// }
 
-function generateRandomCards(number: number) {
-  const cards = [];
-  for (let i = 0; i < number; i += 1) {
-    cards.push(generateRandomCard());
-  }
-  return cards;
-}
+// function generateRandomCards(number: number) {
+//   const cards = [];
+//   for (let i = 0; i < number; i += 1) {
+//     cards.push(generateRandomCard());
+//   }
+//   return cards;
+// }
 
 const CaravanGamePage = observer(function GamePage() {
   const params = useParams();
