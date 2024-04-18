@@ -1,5 +1,5 @@
-[] Add HTTPS to server
-[] Fix nested cards overflow
-[] Work on mobile version
-[] Change win state logic
-[] Fixed height of whole window
+[x] Add HTTPS to server
+[x] Fix nested cards overflow
+[x] Work on mobile version
+[x] Change win state logic
+[x] Fixed height of whole window

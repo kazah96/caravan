@@ -8,7 +8,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 logger = get_logger("game_manager")
 
-GAME_MAX_TTL = 10 * 60 # In seconds
+GAME_MAX_TTL = 30 * 60 # In seconds
 
 
 class GameManager:
