@@ -73,6 +73,8 @@ export class CaravanStore {
   }
 
   public async initGame(gameId: string) {
+    this.setGameInitialized(false);
+    this.setError('');
     try {
       const data = (await this.api.get(`/games/join/${gameId}`)) as AxiosResponse<{
         player_side: Players;
@@ -111,6 +113,8 @@ export class CaravanStore {
 
         this.handleGetState(stateResponse.data.state, stateResponse.data.data);
       } catch {
+        this.setGameInitialized(false);
+        this.setError('Game has been closed');
         flag = false;
         break;
       }
@@ -145,32 +149,48 @@ export class CaravanStore {
     return this.myPlayer === this.currentTurn;
   }
 
-  public sendDropcaravanMessage(caravanName: string) {
-    this.api.post(`/caravan/${this.gameID}/discard_caravan`, {
-      caravan_name: caravanName,
-    });
+  public async sendDropcaravanMessage(caravanName: string) {
+    try {
+      await this.api.post(`/caravan/${this.gameID}/discard_caravan`, {
+        caravan_name: caravanName,
+      });
+    } catch (e) {
+      this.setError('Error');
+    }
   }
 
-  public sendDropCardMessage(card_index: number | undefined | null) {
+  public async sendDropCardMessage(card_index: number | undefined | null) {
     if (!isNumber(card_index)) {
       return;
     }
 
     const card = this.myHand[card_index];
 
-    this.api.post(`/caravan/${this.gameID}/discard_card`, {
-      card,
-    });
+    try {
+      await this.api.post(`/caravan/${this.gameID}/discard_card`, {
+        card,
+      });
+    } catch (e) {
+      this.setError('Error');
+    }
   }
 
-  public sendPutCardMessage(card: Card, caravanName: string, cardInCaravan: number | undefined) {
+  public async sendPutCardMessage(
+    card: Card,
+    caravanName: string,
+    cardInCaravan: number | undefined,
+  ) {
     const data = {
       card,
       caravan_name: caravanName,
       card_in_caravan: cardInCaravan,
     };
 
-    this.api.post(`/caravan/${this.gameID}/put_card`, data);
+    try {
+      await this.api.post(`/caravan/${this.gameID}/put_card`, data);
+    } catch (e) {
+      this.setError('Error');
+    }
   }
 
   @action.bound

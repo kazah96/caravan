@@ -37,7 +37,7 @@ export function SingleCaravan(props: {
     canPutCard(selectedCard, hoveredCard, cards, isMyCaravan ?? false, areCaravansFilled);
 
   const cardHighlight = canAdd ? 'green' : 'red';
-
+  const caravanStrength = calculateCaravanStrength(cards);
   // const multiplier = cards.length > 5 ? 20 : 20;
   return (
     <div className={cn('relative flex flex-col items-center')}>
@@ -110,10 +110,25 @@ export function SingleCaravan(props: {
     </div>
   );
 
+  function getColorForCaravanStrength(caravanPoints: number) {
+    if (caravanPoints < 21) {
+      return 'text-fallout-200';
+    }
+
+    if (caravanPoints >= 21 && caravanPoints <= 26) {
+      return 'text-green-400';
+    }
+
+    return 'text-red-400';
+  }
+
   function getHeader() {
     return (
       <h1 className="mb-2 font-thin text-sm text-fallout-500 font-[NewLetterGotic] flex items-center">
-        {name}: <span className="text-blue-400 ms-1">{calculateCaravanStrength(cards)}</span>
+        {name}:{' '}
+        <span className={cn('ms-1', getColorForCaravanStrength(caravanStrength))}>
+          {caravanStrength}
+        </span>
       </h1>
     );
   }
