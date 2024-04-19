@@ -143,8 +143,7 @@ class GameEngine:
     def check_is_game_over(self) -> Union[PlayerSides, None]:
         self.game_state = CaravanState.PLAYING
 
-        winner = CaravanState.PLAYER_2_WON
-        # winner = self.check_win_for_players()
+        winner = self.check_win_for_players()
         
         if winner:
             self.game_state = winner
