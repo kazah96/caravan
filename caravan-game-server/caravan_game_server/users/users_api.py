@@ -26,6 +26,7 @@ def whoami(user_id: UserIDDependency):
 
     return user
 
+
 @router.get("/{user_id}/get")
 def get_user(user_id: str):
     try:
@@ -34,3 +35,13 @@ def get_user(user_id: str):
         raise HTTPException(404, "User not found")
 
     return user
+
+
+@router.get("/stat")
+def get_stat():
+    try:
+        stat = user_storage.get_users_stat()
+
+        return stat
+    except KeyError:
+        raise HTTPException(404, "User not found")

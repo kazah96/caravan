@@ -33,14 +33,27 @@ class GameState(Enum):
 class Game:
     on_game_closed = Signal()
 
-    def __init__(self, game_name: Optional[str]):
+    def __init__(self, game_name: Optional[str], created_at: datetime.datetime):
         self.game_name = game_name
         self.joined_players: dict[PlayerSides, str] = {}
         self.state: GameState = GameState.WAITING
         self.game = GameEngine()
-        self.created_at = datetime.datetime.now()
+        self.created_at = created_at
 
         self._update_subscribers: list[asyncio.Event] = []
+
+    def get_winner_user_id(self):
+        if self.game.game_state == CaravanState.PLAYER_1_WON:
+            return self.joined_players[PlayerSides.PLAYER_1]
+        if self.game.game_state == CaravanState.PLAYER_2_WON:
+            return self.joined_players[PlayerSides.PLAYER_2]
+        
+    def get_loser_user_id(self):
+        if self.game.game_state == CaravanState.PLAYER_1_WON:
+            return self.joined_players[PlayerSides.PLAYER_2]
+        if self.game.game_state == CaravanState.PLAYER_2_WON:
+            return self.joined_players[PlayerSides.PLAYER_1]
+        
 
     def is_game_active(self):
         return self.state == GameState.IN_GAME

@@ -14,6 +14,8 @@ export class UserStore {
 
   @observable isUserLoaded = false;
 
+  @observable userStats: { name: string; win: number; lose: number }[] = [];
+
   @computed public get isUser() {
     return this.isUserLoaded && !!this.userName;
   }
@@ -29,6 +31,14 @@ export class UserStore {
     }>;
 
     return data.data.name;
+  }
+
+  async requestUsersStats() {
+    const data = (await this.apiStore.get('/users/stat', {})) as AxiosResponse<
+      { name: string; win: number; lose: number }[]
+    >;
+
+    this.setUserStats(data.data);
   }
 
   async handleCreateUser(name: string) {
@@ -51,6 +61,11 @@ export class UserStore {
 
     this.setIsUserLoaded(true);
     this.setIsLoading(false);
+  }
+
+  @action.bound
+  setUserStats(data: { name: string; win: number; lose: number }[]) {
+    this.userStats = data;
   }
 
   @action.bound

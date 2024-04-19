@@ -1,14 +1,16 @@
 import datetime
+from re import U
 from typing import Optional
 import uuid
 from caravan_game_server.caravan.game import Game, GameState
+from caravan_game_server.db.db import Game as GameDBModel, UserGame as UserGameDBModel
 
 from caravan_game_server.logger import get_logger
 from apscheduler.schedulers.background import BackgroundScheduler
 
 logger = get_logger("game_manager")
 
-GAME_MAX_TTL = 30 * 60 # In seconds
+GAME_MAX_TTL = 30 * 60  # In seconds
 
 
 class GameManager:
@@ -37,27 +39,55 @@ class GameManager:
                 game_ids_to_prune.append(id)
 
         for game_id in game_ids_to_prune:
-            del self.games[game_id]
-
+            self._close_game(game_id)
 
         logger.info(f"Pruned {len(game_ids_to_prune)} games")
 
-    def create_game(self, room_name: Optional[str] = "") -> str:
+    def _close_game(self, game_id: str):
+        # gameModel: GameDBModel = GameDBModel.get_by_id(pk=game_id)
 
+        GameDBModel.update(closed_at=datetime.datetime.now()).where(
+            GameDBModel.id == game_id
+        ).execute()
+
+        del self.games[game_id]
+
+    def create_game(self, room_name: Optional[str] = "") -> str:
         id = str(uuid.uuid4())
-        game = Game(room_name)
+        created_at = datetime.datetime.now()
+
+        game = Game(game_name=room_name, created_at=created_at)
         game.on_game_closed.connect(self._handle_game_closed)
 
         self.games[id] = game
+
+        GameDBModel.create(id=id, created_at=created_at)
         logger.info(f"Game created: {id}")
 
         return id
 
+    def _update_player_wins(self, game_id: str, winner_id: str, loser_id: str):
+
+        UserGameDBModel.update(result="win").where(
+            (UserGameDBModel.user == winner_id) & (UserGameDBModel.game == game_id)
+        ).execute()
+
+        UserGameDBModel.update(result="lose").where(
+            (UserGameDBModel.user == loser_id) & (UserGameDBModel.game == game_id)
+        ).execute()
+
     def _handle_game_closed(self, game: Game):
         for id, value in self.games.items():
             if value == game:
+
+                winner_id = game.get_winner_user_id()
+                loser_id = game.get_loser_user_id()
+                if winner_id and loser_id:
+                    self._update_player_wins(id, winner_id, loser_id)
+
                 logger.info(f"Game id {id} is closed")
-                del self.games[id]
+
+                self._close_game(id)
                 return
 
         raise KeyError("Game not found")
@@ -67,6 +97,9 @@ class GameManager:
 
         if not game:
             raise KeyError("Game not found")
+
+        if not user_id in game.get_joined_players_ids():
+            UserGameDBModel.create(user=user_id, game=game_id)
 
         player_side = game.join_player(user_id)
 

@@ -1,12 +1,18 @@
 import { PropsWithChildren } from 'react';
+import cn from 'classnames';
 
-type Props = PropsWithChildren;
+type Props = PropsWithChildren<{ className?: string }>;
 
 function FalloutWindow(props: Props) {
-  const { children } = props;
+  const { children, className } = props;
 
   return (
-    <div className="relative min-w-80 max-w-screen-lg h-[160px] border-fallout-500 fallout-menu-background border">
+    <div
+      className={cn(
+        'relative min-w-80 max-w-screen-lg h-[160px] border-fallout-500 fallout-menu-background border',
+        className,
+      )}
+    >
       {children}
     </div>
   );

@@ -1,6 +1,8 @@
+import datetime
+from caravan_game_server.db.db import User as UserDBModel, UserGame
 from caravan_game_server.users.model import User
 from pydantic import ValidationError, TypeAdapter
-
+from peewee import DoesNotExist, fn, JOIN
 
 TUserStorage = dict[str, User]
 
@@ -13,42 +15,53 @@ class UserStorage:
         self.storage_path = storage_path
         self.storage: TUserStorage = {}
 
-    def __save_storage(self, storage: TUserStorage):
-        with open(self.storage_path, mode="wb") as file:
-            data = userStorageModel.dump_json(storage)
-            file.write(data)
-
-    def open_user_storage(self) -> TUserStorage:
-        data = {}
-
-        try:
-            with open(self.storage_path, mode="rb") as file:
-                data = userStorageModel.validate_json(file.read())
-        except (FileNotFoundError, ValidationError) as e:
-            self.__save_storage({})
-
-        return data
-
-    def load_storage(self):
-        storage = self.open_user_storage()
-        self.storage = storage
-
-    def save_storage(self):
-        self.__save_storage(self.storage)
-
     def get_user_by_id(self, user_id: str) -> User | None:
-        self.load_storage()
-
-        return self.storage[user_id]
+        try:
+            user_from_db = UserDBModel.get_by_id(pk=user_id)
+            user = User(id=user_from_db.id, name=user_from_db.name)
+            return user
+        except DoesNotExist:
+            return None
 
     def create_new_user(self, id: str, name: str) -> User:
-        user = User(id=id, name=name)
+        user = User(
+            id=id,
+            name=name,
+        )
 
-        self.storage[user.id] = user
-        self.save_storage()
+        u = UserDBModel.create(name=name, id=id, created_at=datetime.datetime.now())
+        u.save()
 
         return user
+
+    def get_users_stat(self):
+        result_dict = {}
+
+        result = (
+            UserDBModel.select(
+                UserDBModel.name,
+                UserDBModel.id,
+                UserGame.result,
+                fn.COUNT(UserGame.result).alias("total"),
+            )
+            .join(UserGame, JOIN.LEFT_OUTER)
+            .group_by(UserGame.result, UserDBModel.id)
+            .dicts()
+        )
+
+        for item in result:
+            current_user = result_dict.get(item["id"], {})
+            current_user[item["result"]] = item["total"]
+            current_user["name"] = item["name"]
+            current_user["id"] = item["id"]
+
+            result_dict[item["id"]] = current_user
+        pass
+
+        return list(result_dict.values())
 
 
 USER_STORAGE_FILE = "./test_users.json"
 storage = UserStorage(USER_STORAGE_FILE)
+
+storage.get_users_stat()
