@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, Union
+from typing import Optional
 from caravan_game_server.caravan.game_engine.model import (
     POINT_MAP,
     Caravan,
@@ -14,7 +14,7 @@ from caravan_game_server.caravan.game_engine.utils import (
     check_is_point_card,
     get_last_element,
 )
-from caravan_game_server.caravan.model import PlayerSides
+from caravan_game_server.caravan.game_engine.model import PlayerSides
 
 
 def remove_card_with_linked(cards: list[Card], index: int):

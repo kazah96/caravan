@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Dict, List, Union
 
-from caravan_game_server.caravan.model import PlayerSides
 from pydantic import BaseModel
 
 CARAVAN_NAMES = [
@@ -34,7 +33,7 @@ class Caravan(BaseModel, ABC):
     @abstractmethod
     def count_points(self) -> int:
         pass
-    
+
     @abstractmethod
     def is_in_bounds(self) -> bool:
         pass
@@ -42,7 +41,6 @@ class Caravan(BaseModel, ABC):
     @abstractmethod
     def clear_caravan(self):
         pass
-
 
 
 class Suit(Enum):
@@ -71,6 +69,17 @@ class Rank(Enum):
     JACK = "JACK"
     QUEEN = "QUEEN"
     KING = "KING"
+
+
+class PlayerSides(str, Enum):
+    PLAYER_1 = "player1"
+    PLAYER_2 = "player2"
+
+
+class PlayerState(Enum):
+    WAITING_FOR_GAME = "WAITING_FOR_GAME"
+    IN_GAME = "IN_GAME"
+    IN_LOBBY = "IN_LOBBY"
 
 
 class PlayerMove(Enum):

@@ -1,7 +1,6 @@
 import asyncio
 import datetime
 from enum import Enum
-from telnetlib import GA
 from typing import Optional
 import anyio
 from blinker import Signal
@@ -13,8 +12,8 @@ from caravan_game_server.caravan.game_engine.commands import (
 )
 from caravan_game_server.caravan.game_engine.engine import GameEngine
 from caravan_game_server.caravan.game_engine.model import CaravanState
-from caravan_game_server.caravan.model import PlayerSides
-from caravan_game_server.rest_server.caravan.model import (
+from caravan_game_server.caravan.game_engine.model import PlayerSides
+from caravan_game_server.caravan.model import (
     CaravanDiscardCaravanRequest,
     CaravanDiscardCardRequest,
     CaravanPutCardRequest,

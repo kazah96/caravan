@@ -1,9 +1,9 @@
 import datetime
 from typing import Optional
 import uuid
-from caravan_game_server.rest_server.caravan.game import Game, GameState
+from caravan_game_server.caravan.game import Game, GameState
 
-from caravan_game_server.rest_server.logger import get_logger
+from caravan_game_server.logger import get_logger
 from apscheduler.schedulers.background import BackgroundScheduler
 
 logger = get_logger("game_manager")

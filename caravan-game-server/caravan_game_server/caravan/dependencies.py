@@ -1,6 +1,6 @@
 from typing import Annotated
-from caravan_game_server.rest_server.caravan.game import Game
-from caravan_game_server.rest_server.caravan.game_manager import manager as game_manager
+from caravan_game_server.caravan.game import Game
+from caravan_game_server.caravan.game_manager import manager as game_manager
 from fastapi import Depends, HTTPException, Header
 
 

@@ -1,16 +1,10 @@
-import asyncio
-from functools import wraps
-from typing import Annotated, Optional
-from caravan_game_server.rest_server.caravan.dependencies import UserIDDependency
-from caravan_game_server.rest_server.caravan.game import Game
-from caravan_game_server.rest_server.caravan.model import (
-    CaravanDiscardCaravanRequest,
-    CaravanDiscardCardRequest,
-    CaravanPutCardRequest,
+from typing import Optional
+from caravan_game_server.caravan.dependencies import UserIDDependency
+from caravan_game_server.caravan.model import (
     CreateRoomRequest,
 )
-from fastapi import APIRouter, Depends, HTTPException, Header
-from caravan_game_server.rest_server.caravan.game_manager import manager as game_manager
+from fastapi import APIRouter, HTTPException
+from caravan_game_server.caravan.game_manager import manager as game_manager
 
 router = APIRouter(prefix="/games")
 

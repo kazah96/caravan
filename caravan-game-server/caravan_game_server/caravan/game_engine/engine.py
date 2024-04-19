@@ -1,6 +1,5 @@
 from __future__ import annotations
-import random
-from typing import Dict, List, Optional, TypeVar, Union
+from typing import Dict, List, Union
 from caravan_game_server.caravan.game_engine.caravan import (
     CaravanImplementation,
     CaravanNumber,
@@ -13,7 +12,6 @@ from caravan_game_server.caravan.game_engine.model import (
     GameStateData,
 )
 from caravan_game_server.caravan.game_engine.settings import (
-    HAND_SIZE,
     INITIAL_HAND_SIZE,
 )
 from caravan_game_server.caravan.game_engine.utils import (
@@ -21,7 +19,7 @@ from caravan_game_server.caravan.game_engine.utils import (
     generate_whole_deck,
     get_random_cards_from_deck,
 )
-from caravan_game_server.caravan.model import PlayerSides
+from caravan_game_server.caravan.game_engine.model import PlayerSides
 
 FULL_DECK = generate_whole_deck()
 
@@ -149,10 +147,3 @@ class GameEngine:
 
         if winner:
             self.game_state = winner
-
-
-if __name__ == "__main__":
-    engine = GameEngine()
-    engine.init_game()
-
-    engine.show_caravans()
