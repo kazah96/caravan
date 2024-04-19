@@ -1,7 +1,13 @@
 import { Card, Players } from '@model/base';
 
+export type User = {
+  id: string;
+  name: string;
+};
+
 export type GameData = {
   current_player: Players;
+  enemy: User;
   hands: Record<string, Card[]>;
   decks: Record<string, Card[]>;
   state: number;

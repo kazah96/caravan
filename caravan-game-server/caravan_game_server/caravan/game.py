@@ -19,6 +19,7 @@ from caravan_game_server.caravan.model import (
     CaravanPutCardRequest,
 )
 from fastapi import HTTPException
+from caravan_game_server.users.players_storage import storage as user_storage
 
 
 class GameState(Enum):
@@ -101,12 +102,19 @@ class Game:
         self._get_game_instance().make_turn(side, command)
         self._update()
 
-    def get_game_state(self):
+    def get_game_state(self, user_id: str):
+        current_player_side = self._get_side_by_player_id(user_id)
+
         if self.state == GameState.WAITING:
             return {"state": GameState.WAITING}
         else:
+            enemy_side = current_player_side.other_side()
+            enemy_id = self.joined_players[enemy_side]
+            enemy = user_storage.get_user_by_id(enemy_id)
+
             return {
                 "state": self.state,
+                "enemy": enemy,
                 "data": self._get_game_instance().get_game_state_data(),
             }
 
@@ -149,7 +157,7 @@ class Game:
     def discard_card(self, player_id: str, data: CaravanDiscardCardRequest):
         self._make_move(player_id, DropCardCommand(data.card))
 
-    async def subscribe_to_updates(self):
+    async def subscribe_to_updates(self, user_id: str):
         event = asyncio.Event()
         self._update_subscribers.append(event)
 
@@ -163,4 +171,4 @@ class Game:
 
         self._update_subscribers.remove(event)
 
-        return self.get_game_state()
+        return self.get_game_state(user_id)

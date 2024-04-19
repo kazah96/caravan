@@ -88,7 +88,7 @@ const CaravanGamePage = observer(function GamePage() {
       </div>
       <div className="flex mb-6 flex-1">
         <PipBoyWindow
-          title={<span>КАРАВАНЫ СОПЕРНИКА </span>}
+          title={<span className="uppercase">КАРАВАНЫ {caravanStore.enemy?.name} </span>}
           titleContent={
             <span
               className={cn('w-2 h-2 ms-2 rounded inline-block shadow', {

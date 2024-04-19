@@ -10,14 +10,14 @@ import { useNavigate } from 'react-router-dom';
 import { FalloutWindow } from '@components/ui/FalloutWindow';
 
 const GamePage = observer(function GamePage() {
-  const { gameStore } = useRootStore();
+  const { gameStore, userStore } = useRootStore();
   const navigate = useNavigate();
 
   return (
     <main className={cn('w-full h-screen flex justify-center items-center p-6 fallout-font', {})}>
       <FalloutWindow>
         <div className="flex flex-col items-center mt-6">
-          <h1 className="text-4xl text-fallout-500 px-4 mb-2">Караван</h1>
+          <h1 className="text-4xl text-fallout-500 px-4 mb-2">Здарова, {userStore.userName}</h1>
           <button
             className="hover:underline cursor-pointer text-2xl bg-fallout-500 px-4 b-shadow"
             onClick={() => {

@@ -41,10 +41,10 @@ def caravan_discard_caravan(
 
 
 @router.get("/{game_id}/subscribe_for_updates", tags=["caravan"])
-async def caravan_subscribe_for_updates(game: GameDependency):
-    return await game.subscribe_to_updates()
+async def caravan_subscribe_for_updates(game: GameDependency, user_id: UserIDDependency):
+    return await game.subscribe_to_updates(user_id)
 
 
 @router.get("/{game_id}/get_state", tags=["caravan"])
-async def get_state(game: GameDependency):
-    return game.get_game_state()
+async def get_state(game: GameDependency, user_id: UserIDDependency):
+    return game.get_game_state(user_id)

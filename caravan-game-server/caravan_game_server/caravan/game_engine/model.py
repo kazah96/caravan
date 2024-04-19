@@ -75,6 +75,9 @@ class PlayerSides(str, Enum):
     PLAYER_1 = "player1"
     PLAYER_2 = "player2"
 
+    def other_side(self):
+        return PlayerSides.PLAYER_1 if self == PlayerSides.PLAYER_2 else PlayerSides.PLAYER_2
+
 
 class PlayerState(Enum):
     WAITING_FOR_GAME = "WAITING_FOR_GAME"

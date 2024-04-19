@@ -3,7 +3,7 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import { Caravan, Card, Players } from '@model/base';
 import { isNumber, mapToObj } from 'remeda';
 import axios, { AxiosResponse } from 'axios';
-import { GameData } from './messages';
+import { GameData, User } from './messages';
 import { ApiStore } from '../api/ApiStore';
 
 export enum GameState {
@@ -15,6 +15,7 @@ export enum GameState {
 
 type StateResponse = {
   state: 0 | 1 | 2 | 3;
+  enemy: User;
   data?: GameData;
 };
 
@@ -43,6 +44,8 @@ export class CaravanStore {
   @observable public currentTurn: Players = 'player1';
 
   @observable public currentState: GameState = GameState.WAITING;
+
+  @observable public enemy: User | null = null;
 
   @observable totalDeckCount = 0;
 
@@ -86,7 +89,11 @@ export class CaravanStore {
         `/caravan/${gameId}/get_state`,
       )) as AxiosResponse<StateResponse>;
 
-      this.handleGetState(initialStateResponse.data.state, initialStateResponse.data.data);
+      this.handleGetState(
+        initialStateResponse.data.state,
+        initialStateResponse.data.enemy,
+        initialStateResponse.data.data,
+      );
 
       this.subscribeForUpdates(gameId);
       this.setGameInitialized(true);
@@ -111,7 +118,11 @@ export class CaravanStore {
           `/caravan/${gameId}/subscribe_for_updates`,
         )) as AxiosResponse<StateResponse>;
 
-        this.handleGetState(stateResponse.data.state, stateResponse.data.data);
+        this.handleGetState(
+          stateResponse.data.state,
+          stateResponse.data.enemy,
+          stateResponse.data.data,
+        );
       } catch {
         this.setGameInitialized(false);
         this.setError('Game has been closed');
@@ -132,8 +143,11 @@ export class CaravanStore {
   }
 
   @action.bound
-  private handleGetState(state: 0 | 1 | 2 | 3, data?: GameData) {
+  private handleGetState(state: 0 | 1 | 2 | 3, enemy: User, data?: GameData) {
     this.currentState = MAP_STATE_NUMBER_TO_STATE[state];
+    if (enemy) {
+      this.enemy = enemy;
+    }
     if (data) {
       this.handleUpdateGameData(data);
     }
@@ -210,7 +224,6 @@ export class CaravanStore {
       Object.values(gameData.caravans).filter(caravan => caravan.which !== this.myPlayer),
       caravan => [caravan.name, caravan],
     );
-    // this.currentState = gameData.state;
     this.currentTurn = gameData.current_turn;
     this.enemyCaravans = enemyCaravans;
     this.myHand = gameData.hands[this.myPlayer];

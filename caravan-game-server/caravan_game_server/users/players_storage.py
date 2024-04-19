@@ -1,12 +1,9 @@
-import os
-from uuid import uuid4
-from caravan_game_server.model.user import User
+from caravan_game_server.users.model import User
 from pydantic import ValidationError, TypeAdapter
 
 
 TUserStorage = dict[str, User]
 
-user_storage_path = "./users.json"
 user_storage: TUserStorage = {}
 userStorageModel = TypeAdapter(TUserStorage)
 
@@ -41,13 +38,17 @@ class UserStorage:
 
     def get_user_by_id(self, user_id: str) -> User | None:
         self.load_storage()
-        
+
         return self.storage[user_id]
 
-    def create_new_user(self, name: str) -> User:
-        user = User(id=str(uuid4()), name=name)
+    def create_new_user(self, id: str, name: str) -> User:
+        user = User(id=id, name=name)
 
         self.storage[user.id] = user
         self.save_storage()
 
         return user
+
+
+USER_STORAGE_FILE = "./test_users.json"
+storage = UserStorage(USER_STORAGE_FILE)
