@@ -9,7 +9,8 @@ import cn from 'classnames';
 import { useNavigate } from 'react-router-dom';
 import { FalloutWindow } from '@components/ui/FalloutWindow';
 import { useEffect } from 'react';
-import { PipBoyWindow } from '@/view/components/ui/PipBoyWindow';
+import { PipBoyWindow } from '@components/ui/PipBoyWindow';
+import * as R from 'remeda';
 
 const GamePage = observer(function GamePage() {
   const { gameStore, userStore } = useRootStore();
@@ -18,6 +19,14 @@ const GamePage = observer(function GamePage() {
   useEffect(() => {
     userStore.requestUsersStats();
   }, [userStore]);
+
+  const userStat = R.pipe(
+    userStore.userStats,
+    R.filter(stat => !!stat.win || !!stat.lose),
+    R.map(stat => ({ ...stat, win: stat.win ?? 0, lose: stat.lose ?? 0 })),
+    R.sort((a, b) => b.win - a.win),
+    R.take(10),
+  );
 
   return (
     <main
@@ -49,12 +58,12 @@ const GamePage = observer(function GamePage() {
             </tr>
           </thead>
           <tbody className="text-center">
-            {userStore.userStats.map(stat => {
+            {userStat.map(stat => {
               return (
-                <tr key={stat.name}>
+                <tr key={stat.name + stat.lose + stat.win}>
                   <td>{stat.name}</td>
-                  <td>{stat.win}</td>
-                  <td>{stat.lose}</td>
+                  <td>{stat.win ?? 0}</td>
+                  <td>{stat.lose ?? 0}</td>
                 </tr>
               );
             })}
