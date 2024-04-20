@@ -240,6 +240,18 @@ const CaravanGamePage = observer(function GamePage() {
                 Скопировать ссылку для друга
               </span>
             </CopyToClipboard>
+            <button
+              className="text-fallout-500"
+              onClick={() => {
+                navigator.share({
+                  url: window.location.href,
+                  title: 'Сыграй в караван',
+                  text: 'Сыграй в караван',
+                });
+              }}
+            >
+              Share
+            </button>
           </div>
         </Modal>
         <Modal show={showLoseModal} onHide={() => {}}>
