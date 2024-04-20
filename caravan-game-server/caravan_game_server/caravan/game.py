@@ -84,7 +84,7 @@ class Game:
 
         if new_state.state == CaravanState.PLAYER_1_WON:
             self.state = GameState.PLAYER_1_WON
-        if new_state == CaravanState.PLAYER_2_WON:
+        if new_state.state == CaravanState.PLAYER_2_WON:
             self.state = GameState.PLAYER_2_WON
 
         self._notify_subscribers()

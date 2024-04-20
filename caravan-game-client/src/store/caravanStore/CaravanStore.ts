@@ -173,6 +173,17 @@ export class CaravanStore {
     }
   }
 
+  @action.bound
+  public removeCard(index: number) {
+    const newCards = [...this.myHand];
+
+    if (isNumber(index)) {
+      newCards.splice(index, 1);
+    }
+
+    this.myHand = newCards;
+  }
+
   public async sendDropCardMessage(card_index: number | undefined | null) {
     if (!isNumber(card_index)) {
       return;
@@ -186,6 +197,15 @@ export class CaravanStore {
       });
     } catch (e) {
       this.setError('Error');
+    }
+  }
+
+  @action.bound
+  public addCardToCaravanList(card: Card, caravanName: string, cardInCaravan: number) {
+    if (caravanName in this.myCaravans) {
+      const newCaravanCards = [...this.myCaravans[caravanName].cards];
+      newCaravanCards.splice(cardInCaravan + 1, 0, card);
+      this.myCaravans[caravanName].cards = newCaravanCards;
     }
   }
 

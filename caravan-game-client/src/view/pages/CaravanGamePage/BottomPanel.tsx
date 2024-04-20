@@ -6,8 +6,11 @@ import { observer } from 'mobx-react-lite';
 import cn from 'classnames';
 import { Modal } from '@components/ui/utils/modal';
 import CogIcon from '@assets/icons/cogwheel.svg?react';
-// import { CARD_RANK_LIST, CARD_SUIT_LIST } from '@model/base';
-import { useRef, useState } from 'react';
+import TrashIcon from '@assets/icons/Trash/Trash 2.svg?react';
+import { useState } from 'react';
+import { useDroppable } from '@dnd-kit/core';
+import * as R from 'remeda';
+import { CaravanStore } from '@store/caravanStore/CaravanStore';
 import { DrawCard } from './DrawCard';
 
 type Props = {
@@ -18,11 +21,10 @@ type Props = {
 const BottomPanel = observer(function BottomPanel(props: Props) {
   const { caravanStore } = useRootStore();
   const { handleClickHandCard, selectedCardIndex } = props;
-  const [isClicked, setIsClicked] = useState<number | null>(null);
-  const cogElementRef = useRef<HTMLDivElement>(null);
+  // const cogElementRef = useRef<HTMLDivElement>(null);
   const [showHelp, setShowHelp] = useState<boolean>(false);
 
-  const cogRect = cogElementRef.current?.getBoundingClientRect();
+  // const cogRect = cogElementRef.current?.getBoundingClientRect();
 
   return (
     <>
@@ -35,7 +37,7 @@ const BottomPanel = observer(function BottomPanel(props: Props) {
       >
         <div
           className={cn('flex relative p-4 justify-center', {
-            'pointer-events-none': !caravanStore.isMyTurn || caravanStore.gameState !== 'playing',
+            // 'pointer-events-none': !caravanStore.isMyTurn || caravanStore.gameState !== 'playing',
           })}
         >
           {caravanStore.myHand.map((item, key) => (
@@ -44,39 +46,22 @@ const BottomPanel = observer(function BottomPanel(props: Props) {
               key={item.rank + item.suit}
               className={cn(
                 'first:-ms-0 -ms-8 lg:-ms-14 relative left-0 transition-all duration-600',
-                //   {
-                //     'left-32': ,
-                //   },
               )}
-              style={{
-                left: selectedCardIndex === key && isClicked === key ? countDistance(key) : 0,
-              }}
+              // style={{
+              //   left: selectedCardIndex === key && isClicked === key ? countDistance(key) : 0,
+              // }}
             >
               <DrawCard
                 isSelected={selectedCardIndex === key}
+                index={key}
                 card={item}
+                needDrag={caravanStore.isMyTurn}
                 onClick={() => handleClickHandCard(key)}
               />
             </div>
           ))}
-          <div
-            onClick={handleDropCardClick}
-            ref={cogElementRef}
-            className="relative ms-4 text-lg border-4 border-fallout-300 select-none cursor-pointer rounded-xl playing-card flex justify-between"
-          >
-            <div className="center-absolute">
-              <CogIcon
-                style={{}}
-                className={cn('w-16 h-16 lg:w-20 lg:h-20 ', {
-                  'animate-spin-slow':
-                    caravanStore.isMyTurn && caravanStore.gameState === 'playing',
-                })}
-              />
-            </div>
-            <span style={{}} className="center-absolute text-fallout-200 text-2xl">
-              {caravanStore.totalDeckCount}
-            </span>
-          </div>
+
+          <Cog selectedCardIndex={selectedCardIndex ?? undefined} caravanStore={caravanStore} />
         </div>
       </PipBoyWindow>
       <Modal show={showHelp} onHide={() => setShowHelp(false)}>
@@ -88,23 +73,52 @@ const BottomPanel = observer(function BottomPanel(props: Props) {
     </>
   );
 
-  function countDistance(card_number: number) {
-    const card = document.getElementById(`card-${card_number}`);
-    const cardLeft = card ? card?.getBoundingClientRect().left : 0;
+  // function countDistance(card_number: number) {
+  //   const card = document.getElementById(`card-${card_number}`);
+  //   const cardLeft = card ? card?.getBoundingClientRect().left : 0;
 
-    return (cogRect?.left ?? 0) - cardLeft;
-  }
-
-  function handleDropCardClick() {
-    setIsClicked(selectedCardIndex);
-    setTimeout(() => {
-      caravanStore.sendDropCardMessage(selectedCardIndex);
-    }, 500);
-
-    setTimeout(() => {
-      setIsClicked(null);
-    }, 500);
-  }
+  //   return (cogRect?.left ?? 0) - cardLeft;
+  // }
 });
 
 export { BottomPanel };
+
+function Cog(props: { selectedCardIndex?: number; caravanStore: CaravanStore }) {
+  const { selectedCardIndex, caravanStore } = props;
+
+  const { setNodeRef, isOver } = useDroppable({
+    id: 'Cog',
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={cn(
+        'relative ms-4 text-lg border-4 border-fallout-300 select-none cursor-pointer rounded-xl playing-card flex justify-between hover:bg-red-400',
+      )}
+    >
+      <div className="center-absolute">
+        {!R.isNumber(selectedCardIndex) ? (
+          <CogIcon
+            style={{}}
+            className={cn('w-16 h-16 lg:w-20 lg:h-20 ', {
+              'animate-spin-slow': caravanStore.isMyTurn && caravanStore.gameState === 'playing',
+            })}
+          />
+        ) : (
+          <TrashIcon
+            style={{}}
+            className={cn('transition-transform w-16 h-16 lg:w-20 lg:h-20 ', {
+              'scale-150': isOver,
+            })}
+          />
+        )}
+      </div>
+      {!R.isNumber(selectedCardIndex) && (
+        <span style={{}} className="center-absolute text-fallout-200 text-2xl">
+          {caravanStore.totalDeckCount}
+        </span>
+      )}
+    </div>
+  );
+}

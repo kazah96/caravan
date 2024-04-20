@@ -1,16 +1,35 @@
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import cn from 'classnames';
+import { useDraggable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 import { CardSuit, Card, MAP_VARIANT_TO_VIEW } from '../../../model/base';
 
 type CardProps = {
   card: Card;
-  onClick: () => void;
+  index: number;
+  onClick?: () => void;
+  onMouseUp?: () => void;
   isSelected?: boolean;
   highlight?: 'green' | 'red' | 'blue';
+  needDrag?: boolean;
 };
 
 export function DrawCard(props: CardProps) {
+  const {
+    isSelected,
+    index,
+    highlight,
+    needDrag,
+    card: { suit, rank },
+  } = props;
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    data: { index },
+    disabled: !needDrag,
+    id: rank + suit + String(needDrag),
+  });
+
   const suitMap: Record<CardSuit, string> = {
     CLUBS: '♣',
     DIAMONDS: '♦',
@@ -25,20 +44,22 @@ export function DrawCard(props: CardProps) {
     HEARTS: 'text-red-500',
   };
 
-  const {
-    onClick,
-    isSelected,
-    highlight,
-    card: { suit, rank },
-  } = props;
-
   const variantView = MAP_VARIANT_TO_VIEW[rank];
 
   const currentColor = colorMap[suit];
   const suitIcon = suitMap[suit];
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    zIndex: transform ? 1000 : 1,
+  };
+
   return (
     <div
-      onClick={onClick}
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
       className={cn(
         currentColor,
         {
@@ -47,7 +68,7 @@ export function DrawCard(props: CardProps) {
           'hover:border-green-500 border-2': highlight === 'green',
           '!border-green-300 border-2': isSelected,
         },
-        'transition hover:scale-125 select-none opacity-100 cursor-pointer relative card-shadow  border-transparent border-2 bg-fallout-200 rounded-md md:rounded-xl playing-card md:p-1 flex justify-between text-[10px] md:text-xl',
+        'touch-manipulation relative select-none opacity-100 cursor-pointer card-shadow  border-transparent border-2 bg-fallout-200 rounded-md md:rounded-xl playing-card md:p-1 flex justify-between text-[10px] md:text-xl',
       )}
     >
       <div className="flex flex-col justify-start items-center">

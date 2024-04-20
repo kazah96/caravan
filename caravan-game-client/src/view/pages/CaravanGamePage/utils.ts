@@ -142,6 +142,11 @@ export function canPutCard(
       return false;
     }
 
+    // Не имеет смысла ложить королеву куда-то кроме последней карты
+    if (card.rank === 'QUEEN' && cardInCaravanIndex !== caravan.length - 1) {
+      return false;
+    }
+
     return true;
   }
 
