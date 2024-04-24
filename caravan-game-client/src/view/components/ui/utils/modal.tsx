@@ -4,6 +4,7 @@
 import { PropsWithChildren, useEffect } from 'react';
 
 import { ScrollBarHelper } from '@utils/scrollbar';
+import { FalloutWindow } from '../FalloutWindow';
 
 type Props = PropsWithChildren<{
   onHide: () => void;
@@ -36,17 +37,17 @@ export function Modal(props: Props) {
 
   return (
     <div
-      className="w-screen h-screen fixed bg-gray-100 bg-opacity-60 z-50 top-0 left-0"
+      className="w-screen h-screen fixed bg-gray-500 bg-opacity-60 z-50 top-0 left-0"
       onClick={onHide}
     >
       <div className="flex justify-center items-center h-full z-[100]">
         <div
-          className="flex-1 mx-4 max-w-[500px] max-h-[500px]"
+          className="flex mx-4 justify-center"
           onClick={e => {
             e.stopPropagation();
           }}
         >
-          {children}
+          <FalloutWindow>{children}</FalloutWindow>
         </div>
       </div>
     </div>

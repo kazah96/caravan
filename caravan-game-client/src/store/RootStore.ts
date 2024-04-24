@@ -1,17 +1,17 @@
-import { GameStore } from './GameStore';
-import { LobbyStore } from './LobbyStore';
+import { CaravanStore } from './caravanStore/CaravanStore';
 import { NotificationStore } from './NotificationStore';
 import { ApiStore } from './api/ApiStore';
-import { WebsocketStore } from './api/WebsocketStore';
+import { GameStore } from './GameStore';
+import { UserStore } from './UserStore';
 
 export class RootStore {
   public notificationsStore = new NotificationStore();
 
-  public socketStore = new WebsocketStore();
-
   public apiStore = new ApiStore();
 
-  public gameStore = new GameStore();
+  public userStore = new UserStore(this.apiStore);
 
-  public lobbyStore = new LobbyStore(this.socketStore);
+  public caravanStore = new CaravanStore(this.apiStore);
+
+  public gameStore = new GameStore(this.apiStore);
 }

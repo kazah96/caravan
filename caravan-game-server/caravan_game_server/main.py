@@ -1,10 +1,18 @@
-from caravan_game_server.network.fastapi import fastapiApp
-from caravan_game_server.user_manager import UserManager
-import caravan_game_server.network.connections
-# wrap with a WSGI application
+from caravan_game_server.caravan.caravan_api import router as caravan_router
+from caravan_game_server.caravan.game_manager_api import (
+    router as game_manager_router,
+)
+from caravan_game_server.users.users_api import (
+    router as user_router,
+)
+
+from fastapi import FastAPI
+from caravan_game_server.db.db import Game as GameDBModel, UserGame as UserGameDBModel
 
 
-manager = UserManager()
-app = fastapiApp
+app = FastAPI()
 
+app.include_router(caravan_router)
+app.include_router(game_manager_router)
+app.include_router(user_router)
 

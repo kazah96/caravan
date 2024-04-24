@@ -1,20 +1,24 @@
-export type CardSuit = 'DIAMONDS' | 'HEARTS' | 'CLUBS' | 'SPADES';
+export const CARD_SUIT_LIST = ['DIAMONDS', 'HEARTS', 'CLUBS', 'SPADES'] as const;
+export type CardSuit = (typeof CARD_SUIT_LIST)[number];
+
+export const CARD_RANK_LIST = [
+  'ACE',
+  'TWO',
+  'THREE',
+  'FOUR',
+  'FIVE',
+  'SIX',
+  'SEVEN',
+  'EIGHT',
+  'NINE',
+  'TEN',
+  'JACK',
+  'QUEEN',
+  'KING',
+] as const;
 
 export type Players = 'player1' | 'player2';
-export type CardRank =
-  | 'ACE'
-  | 'TWO'
-  | 'THREE'
-  | 'FOUR'
-  | 'FIVE'
-  | 'SIX'
-  | 'SEVEN'
-  | 'EIGHT'
-  | 'NINE'
-  | 'TEN'
-  | 'JACK'
-  | 'QUEEN'
-  | 'KING';
+export type CardRank = (typeof CARD_RANK_LIST)[number];
 
 export type Card = {
   suit: CardSuit;

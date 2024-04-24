@@ -1,4 +1,25 @@
 @layer base {
+  @font-face {
+    font-family: 'Monofonto';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(@/assets/fonts/Monofonto.ttf) format('woff2');
+  }
+
+  @font-face {
+    font-family: 'NewLetterGotic';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(@/assets/fonts/NewLetterGothicC.ttf) format('woff2');
+  }
+
+  body {
+    background-image: url(@assets/background.png);
+    background-size: cover;
+  }
+  
   :root {
     --sidebar-width: 280px;
     --sidebar-shrink: 70px;
@@ -42,6 +63,52 @@
 }
 
 @layer components {
+  .playing-card {
+    width: 60px;
+    height: 100px;
+  }
+  
+
+  @screen md {
+    .playing-card {
+      width: 112px;
+      height: 192px;
+    }
+  }
+
+
+
+  .center-absolute {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+  }
+  .card-shadow {
+    box-shadow: #00000057 0px 0px 4px 1px;
+  }
+
+  .fallout-menu-background {
+    background: #000000ab;
+    box-shadow: #000000c9 0px 0px 15px 9px;
+  }
+
+  .fade-border {
+    border-image: linear-gradient(#f6b73c, #4d9f0c) 30;
+    border-width: 4px;
+    border-style: solid;
+  }
+
+  .b-shadow {
+    box-shadow: 1px 1px 2px 0px rgba(100, 100, 100, 0.75);
+  }
+  .fallout-font {
+    font-family: 'Monofonto';
+
+    /* color: rgb(243, 216, 14); */
+    /* box-shadow: 120px 80px 40px 20px rgb(0, 255, 255); */
+    text-shadow: rgba(0, 0, 0, 0.232) 1px 1px 1px;
+  }
 
   @keyframes hide {
     0% {

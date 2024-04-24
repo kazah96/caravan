@@ -1,6 +1,5 @@
 from __future__ import annotations
-import random
-from typing import Dict, List, Optional, TypeVar, Union
+from typing import Dict, List, Union
 from caravan_game_server.caravan.game_engine.caravan import (
     CaravanImplementation,
     CaravanNumber,
@@ -9,28 +8,24 @@ from caravan_game_server.caravan.game_engine.commands import CaravanCommand
 from caravan_game_server.caravan.game_engine.model import (
     Caravan,
     Card,
-    GameState,
+    CaravanState,
     GameStateData,
 )
-from caravan_game_server.caravan.game_engine.settings import HAND_SIZE, INITIAL_HAND_SIZE
+from caravan_game_server.caravan.game_engine.settings import (
+    INITIAL_HAND_SIZE,
+)
 from caravan_game_server.caravan.game_engine.utils import (
     generate_random_caravan_names,
     generate_whole_deck,
     get_random_cards_from_deck,
 )
-from caravan_game_server.caravan.model import PlayerSides
+from caravan_game_server.caravan.game_engine.model import PlayerSides
 
 FULL_DECK = generate_whole_deck()
 
 
 def get_caravans_by_player(caravans: Dict[str, Caravan], player: PlayerSides):
     return [caravan for caravan in caravans.values() if caravan.which == player]
-
-
-def count_win_for_player(winners: list[PlayerSides], player_side: PlayerSides):
-    arr = list(filter(lambda side: side == player_side, winners))
-    t = len(arr) >= 2
-    return t
 
 
 class GameEngine:
@@ -40,11 +35,10 @@ class GameEngine:
         self.caravans: Dict[str, Caravan] = {}
         self.current_hands: Dict[PlayerSides, List[Card]] = {}
         self.decks: Dict[PlayerSides, List[Card]] = {}
-        self.game_state = GameState.PLAYING
+        self.game_state = CaravanState.PLAYING
 
-    def get_game_state_data(self, player_side: PlayerSides):
+    def get_game_state_data(self):
         game_state_data = GameStateData(
-            current_player=player_side,
             hands=self.current_hands,
             decks=self.decks,
             current_turn=self.player_turn,
@@ -61,7 +55,9 @@ class GameEngine:
             print("______")
 
     def init_player(self, player: PlayerSides):
-        hand, deck = get_random_cards_from_deck(generate_whole_deck(), INITIAL_HAND_SIZE)
+        hand, deck = get_random_cards_from_deck(
+            generate_whole_deck(), INITIAL_HAND_SIZE
+        )
         self.decks[player] = deck
         self.current_hands[player] = hand
 
@@ -89,72 +85,65 @@ class GameEngine:
         if player != self.player_turn:
             print("Not your turn")
             return
-            # raise ValueError("Not your turn")
 
         command.execute(self)
 
-        self.player_turn = (
+        next_turn_player = (
             PlayerSides.PLAYER_1
             if self.player_turn == PlayerSides.PLAYER_2
             else PlayerSides.PLAYER_2
         )
 
+        if self.get_total_cards_for_player(next_turn_player) != 0:
+            self.player_turn = next_turn_player
+
         self.check_is_game_over()
 
-    def check_is_game_over(self) -> Union[PlayerSides, None]:
-        def get_caravan_by_number(n: CaravanNumber, caravans: list[Caravan]):
-            for caravan in caravans:
-                if caravan.type == n:  # type: ignore
-                    return caravan
+    def get_total_cards_for_player(self, player: PlayerSides):
+        return len(self.current_hands[player]) + len(self.decks[player])
 
-            return caravans[0]
-
-        self.game_state = GameState.PLAYING
-
+    def check_win_for_players(self):
         player1_caravans = get_caravans_by_player(self.caravans, PlayerSides.PLAYER_1)
         player2_caravans = get_caravans_by_player(self.caravans, PlayerSides.PLAYER_2)
 
-        data = {
-            CaravanNumber.ONE: [
-                get_caravan_by_number(CaravanNumber.ONE, player1_caravans),
-                get_caravan_by_number(CaravanNumber.ONE, player2_caravans),
-            ],
-            CaravanNumber.TWO: [
-                get_caravan_by_number(CaravanNumber.TWO, player1_caravans),
-                get_caravan_by_number(CaravanNumber.TWO, player2_caravans),
-            ],
-            CaravanNumber.THREE: [
-                get_caravan_by_number(CaravanNumber.THREE, player1_caravans),
-                get_caravan_by_number(CaravanNumber.THREE, player2_caravans),
-            ],
-        }
+        caravan_scores = list(
+            map(
+                lambda caravans: [
+                    caravan.count_points()
+                    for caravan in caravans
+                    if caravan.is_in_bounds()
+                ],
+                [player1_caravans, player2_caravans],
+            )
+        )
 
-        winners: list[PlayerSides] = []
+        if len(caravan_scores[0]) == 3:
+            return CaravanState.PLAYER_1_WON
+        if len(caravan_scores[1]) == 3:
+            return CaravanState.PLAYER_2_WON
 
-        for caravan_number, (player_1_caravan, player_2_caravan) in data.items():
-            p1points = player_1_caravan.count_points()
-            p2points = player_1_caravan.count_points()
+        are_players_dont_have_cards = self.get_total_cards_for_player(
+            PlayerSides.PLAYER_1
+        ) == 0 and self.get_total_cards_for_player(PlayerSides.PLAYER_2)
 
-            if player_1_caravan.is_in_bounds():
-                if player_2_caravan.is_in_bounds():
-                    if p1points > p2points:
-                        winners.append(PlayerSides.PLAYER_1)
-                    else:
-                        winners.append(PlayerSides.PLAYER_2)
-                else:
-                    winners.append(PlayerSides.PLAYER_1)
+        if are_players_dont_have_cards:
+            if len(caravan_scores[0]) == 2 and len(caravan_scores[1]) == 2:
+                return (
+                    CaravanState.PLAYER_1_WON
+                    if sum(caravan_scores[0]) > sum(caravan_scores[1])
+                    else CaravanState.PLAYER_2_WON
+                )
 
-            elif player_2_caravan.is_in_bounds():
-                winners.append(PlayerSides.PLAYER_2)
+            if len(caravan_scores[0]) == 2:
+                return CaravanState.PLAYER_1_WON
 
-        if count_win_for_player(winners, PlayerSides.PLAYER_1):
-            self.game_state = GameState.PLAYER_1_WON
-        if count_win_for_player(winners, PlayerSides.PLAYER_2):
-            self.game_state = GameState.PLAYER_2_WON
+            if len(caravan_scores[1]) == 2:
+                return CaravanState.PLAYER_2_WON
 
+    def check_is_game_over(self) -> Union[PlayerSides, None]:
+        self.game_state = CaravanState.PLAYING
 
-if __name__ == "__main__":
-    engine = GameEngine()
-    engine.init_game()
-
-    engine.show_caravans()
+        winner = self.check_win_for_players()
+        
+        if winner:
+            self.game_state = winner

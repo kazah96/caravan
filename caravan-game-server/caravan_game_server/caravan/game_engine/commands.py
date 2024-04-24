@@ -108,6 +108,5 @@ class DropCardCommand(CaravanCommand):
         current_player = game_instance.player_turn
 
         card_index = game_instance.current_hands[current_player].index(self.card)
-        game_instance.current_hands[current_player].pop(card_index)
         new_card = game_instance.decks[current_player].pop()
-        game_instance.current_hands[current_player].append(new_card)
+        game_instance.current_hands[current_player][card_index] = new_card

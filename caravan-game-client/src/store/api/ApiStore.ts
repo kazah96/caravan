@@ -1,26 +1,31 @@
 import axios, { AxiosInstance, AxiosPromise, AxiosRequestConfig } from 'axios';
+import { v4 } from 'uuid';
 
-type Options = {
-  isTrackerApi?: boolean;
-  noAccessToken?: boolean;
-};
-// const PROD_API_URL = 'https://dev2.alivebe.com/v1/';
-const TEST_API_URL = 'http://api.dev2.alivebe.com:82';
+const TEST_API_URL = '/api/';
 
 const API_URL = TEST_API_URL;
 
-const getAPIUrl = (isTrackerApi: boolean) => {
-  if (isTrackerApi) {
-    return `${API_URL}/tracker-api/v1/`;
-  }
-  return `${API_URL}/v1/`;
+const getAPIUrl = () => {
+  return `${API_URL}`;
 };
+
+function getUserID() {
+  let userID = window.localStorage.getItem('userID');
+
+  if (!userID) {
+    userID = v4().toString();
+  }
+
+  window.localStorage.setItem('userID', userID);
+
+  return userID;
+}
 export class ApiStore {
   constructor() {
     const config: AxiosRequestConfig = {
       baseURL: TEST_API_URL,
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
     };
 
@@ -39,38 +44,36 @@ export class ApiStore {
     return window.localStorage.getItem('tracker_api_access_token');
   }
 
-  private getConfig(options: Options = {}): AxiosRequestConfig {
-    if (options.noAccessToken) {
-      return { baseURL: getAPIUrl(!!options.isTrackerApi) };
-    }
+  // eslint-disable-next-line class-methods-use-this
+  private getConfig(): AxiosRequestConfig {
     return {
-      baseURL: getAPIUrl(!!options.isTrackerApi),
+      baseURL: getAPIUrl(),
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Bearer ${options.isTrackerApi ? this.trackerApiAccesToken : this.accessToken}`,
+        'Content-Type': 'application/json',
+        'User-Id': getUserID(),
       },
     };
   }
 
-  public get<T>(url: string, params?: object, options?: Options): AxiosPromise<T> {
-    const config = { params, ...this.getConfig(options) };
+  public get<T>(url: string, params?: object): AxiosPromise<T> {
+    const config = { params, ...this.getConfig() };
     return this.api.get(url, config);
   }
 
-  public post<T>(url: string, data?: unknown, options?: Options): AxiosPromise<T> {
-    return this.api.post(url, data, this.getConfig(options));
+  public post<T>(url: string, data?: unknown): AxiosPromise<T> {
+    return this.api.post(url, data, this.getConfig());
   }
 
-  public patch<T>(url: string, data: unknown, options: Options): AxiosPromise<T> {
-    return this.api.patch(url, data, this.getConfig(options));
+  public patch<T>(url: string, data: unknown): AxiosPromise<T> {
+    return this.api.patch(url, data, this.getConfig());
   }
 
-  public del<T>(url: string, data?: unknown, params?: object, options?: Options): AxiosPromise<T> {
+  public del<T>(url: string, data?: unknown, params?: object): AxiosPromise<T> {
     return this.api.delete(url, {
       url,
       data,
       params,
-      ...this.getConfig(options),
+      ...this.getConfig(),
     });
   }
 }

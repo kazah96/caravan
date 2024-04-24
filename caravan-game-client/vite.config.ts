@@ -7,16 +7,22 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), svgr()],
-  base: '',
+  base: '/',
   server: {
     port: 8080,
-    // host: '0.0.0.0',
+    host: '0.0.0.0',
     proxy: {
       '/ws/socket.io/': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
         secure: false,
         ws: true,
+      },
+      '/api/': {
+        target: 'http://193.124.112.162/api',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },
