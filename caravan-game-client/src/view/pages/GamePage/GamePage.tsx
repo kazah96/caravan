@@ -11,11 +11,12 @@ import { FalloutWindow } from '@components/ui/FalloutWindow';
 import { useEffect } from 'react';
 import { PipBoyWindow } from '@components/ui/PipBoyWindow';
 import * as R from 'remeda';
+import { useTranslation } from 'react-i18next';
 
 const GamePage = observer(function GamePage() {
   const { gameStore, userStore } = useRootStore();
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   useEffect(() => {
     userStore.requestUsersStats();
   }, [userStore]);
@@ -37,24 +38,26 @@ const GamePage = observer(function GamePage() {
     >
       <FalloutWindow className="w-full">
         <div className="flex flex-col items-center mt-6">
-          <h1 className="text-4xl text-fallout-500 px-4 mb-2">Здарова, {userStore.userName}</h1>
+          <h1 className="text-4xl text-fallout-500 px-4 mb-2">
+            {t('lobby.greetings', { name: userStore.userName })}
+          </h1>
           <button
             className="hover:underline cursor-pointer text-2xl bg-fallout-500 px-4 b-shadow"
             onClick={() => {
               handleCreateRoom();
             }}
           >
-            Создать комнату
+            {t('lobby.createRoom')}
           </button>
         </div>
       </FalloutWindow>
-      <PipBoyWindow className="mt-4" title="Рейтинг">
+      <PipBoyWindow className="mt-4" title={t('lobby.rating.score')}>
         <table className="w-full text-xl text-fallout-300 text-start  font-[NewLetterGotic]">
           <thead className="border-b border-fallout-500 ">
             <tr className="text-start">
-              <th>Имя</th>
-              <th>Побед</th>
-              <th>Поражений</th>
+              <th>{t('lobby.rating.name')}</th>
+              <th>{t('lobby.rating.wins')}</th>
+              <th>{t('lobby.rating.loses')}</th>
             </tr>
           </thead>
           <tbody className="text-center">

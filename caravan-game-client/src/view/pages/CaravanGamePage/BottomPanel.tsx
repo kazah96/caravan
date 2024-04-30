@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import * as R from 'remeda';
 import { CaravanStore } from '@store/caravanStore/CaravanStore';
+import { useTranslation } from 'react-i18next';
 import { DrawCard } from './DrawCard';
 
 type Props = {
@@ -21,25 +22,19 @@ type Props = {
 const BottomPanel = observer(function BottomPanel(props: Props) {
   const { caravanStore } = useRootStore();
   const { handleClickHandCard, selectedCardIndex } = props;
-  // const cogElementRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
   const [showHelp, setShowHelp] = useState<boolean>(false);
-
-  // const cogRect = cogElementRef.current?.getBoundingClientRect();
 
   return (
     <>
       <PipBoyWindow
         className="mt-8"
         buttons={[
-          { callback: () => {}, label: 'Покинуть игру' },
-          { callback: () => setShowHelp(true), label: 'Как играть то?' },
+          { callback: () => {}, label: t('game.quitGame') },
+          { callback: () => setShowHelp(true), label: t('game.howToPlay') },
         ]}
       >
-        <div
-          className={cn('flex relative p-4 justify-center', {
-            // 'pointer-events-none': !caravanStore.isMyTurn || caravanStore.gameState !== 'playing',
-          })}
-        >
+        <div className={cn('flex relative p-4 justify-center', {})}>
           {caravanStore.myHand.map((item, key) => (
             <div
               id={`card-${key}`}
@@ -47,9 +42,6 @@ const BottomPanel = observer(function BottomPanel(props: Props) {
               className={cn(
                 'first:-ms-0 -ms-8 lg:-ms-14 relative left-0 transition-all duration-600',
               )}
-              // style={{
-              //   left: selectedCardIndex === key && isClicked === key ? countDistance(key) : 0,
-              // }}
             >
               <DrawCard
                 isSelected={selectedCardIndex === key}
@@ -72,13 +64,6 @@ const BottomPanel = observer(function BottomPanel(props: Props) {
       </Modal>
     </>
   );
-
-  // function countDistance(card_number: number) {
-  //   const card = document.getElementById(`card-${card_number}`);
-  //   const cardLeft = card ? card?.getBoundingClientRect().left : 0;
-
-  //   return (cogRect?.left ?? 0) - cardLeft;
-  // }
 });
 
 export { BottomPanel };

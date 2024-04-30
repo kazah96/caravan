@@ -3,3 +3,7 @@
 [x] Work on mobile version
 [x] Change win state logic
 [x] Fixed height of whole window
+[] Make ai
+[] Make short links to game
+[] make card put animation
+[] add i18n

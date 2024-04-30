@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import cn from 'classnames';
 import CogIcon from '@assets/icons/cogwheel.svg?react';
 import { useRootStore } from '@hooks/useRootStore';
+import { useTranslation } from 'react-i18next';
 
 type PageLayoutProps = {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ const PageLayout = observer(function PageLayout(props: PageLayoutProps) {
   const { children } = props;
   const [name, setName] = useState('');
   const { userStore } = useRootStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     userStore.handleWhoami();
@@ -40,7 +42,7 @@ const PageLayout = observer(function PageLayout(props: PageLayoutProps) {
       <div className="w-screen h-screen bg-gray-700 flex justify-center items-center fallout-font">
         <FalloutWindow>
           <div className="flex flex-col justify-center px-4">
-            <h1 className="text-4xl text-fallout-500 mb-4">Как тебя звать?</h1>
+            <h1 className="text-4xl text-fallout-500 mb-4">{t('lobby.whatsYourName')}</h1>
 
             <input
               value={name}
@@ -55,7 +57,7 @@ const PageLayout = observer(function PageLayout(props: PageLayoutProps) {
                 userStore.handleCreateUser(name);
               }}
             >
-              Продолжить
+              {t('lobby.continue')}
             </button>
           </div>
         </FalloutWindow>

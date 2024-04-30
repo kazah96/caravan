@@ -8,10 +8,12 @@ import * as R from 'remeda';
 import { DrawCard } from './DrawCard';
 import { Card } from '../../../model/base';
 import { calculateCaravanStrength, canPutCard } from './utils';
+import { useTranslation } from 'react-i18next';
 
 function Droppable(
   props: PropsWithChildren<{ disabled: boolean; index: number; card: Card; caravanName: string }>,
 ) {
+  
   const { card, caravanName, index, disabled, children } = props;
   const { setNodeRef } = useDroppable({
     disabled,
@@ -35,7 +37,7 @@ export function SingleCaravan(props: {
   headerPosition?: 'top' | 'bottom';
 }) {
   const [showSuggestedCard, setShowSuggestedCard] = useState(false);
-
+  const { t } = useTranslation();
   const {
     cards,
     isMyTurn,
@@ -75,7 +77,7 @@ export function SingleCaravan(props: {
           className="px-2 w-full mb-4 disabled:opacity-40 border border-fallout-500 text-fallout-500"
           onClick={dropCaravan}
         >
-          Сбросить
+          {t('game.discardCaravan')}
         </button>
       )}
       <div className="flex-1 flex flex-col mb-4">

@@ -16,6 +16,7 @@ import { Modal } from '@components/ui/utils/modal';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 // import { CARD_RANK_LIST, CARD_SUIT_LIST } from '@model/base';
 import { DndContext, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { useTranslation } from 'react-i18next';
 import { SingleCaravan } from './SingleCaravan';
 import { BottomPanel } from './BottomPanel';
 
@@ -39,7 +40,7 @@ const CaravanGamePage = observer(function GamePage() {
   const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>();
   const { caravanStore } = useRootStore();
   const [ev, setEv] = useState<{ index: number; caravanName: string } | null>(null);
-
+  const { t } = useTranslation();
   const enemyCaravansList = Object.values(caravanStore.enemyCaravans);
   const myCaravansList = Object.values(caravanStore.myCaravans);
 
@@ -71,8 +72,8 @@ const CaravanGamePage = observer(function GamePage() {
     return (
       <Modal show onHide={() => {}}>
         <div className="flex flex-col items-center justify-center h-full fallout-font">
-          <h1 className="text-4xl text-red-500 px-4 mb-2">Игра не найдена</h1>
-          <h2 className="text-xl text-fallout-500 px-4 mb-2">Возможно закрыта</h2>
+          <h1 className="text-4xl text-red-500 px-4 mb-2">{t('game.notFound')}</h1>
+          <h2 className="text-xl text-fallout-500 px-4 mb-2">{t('game.maybeClosed')}</h2>
         </div>
       </Modal>
     );
@@ -143,11 +144,15 @@ const CaravanGamePage = observer(function GamePage() {
             },
           )}
         >
-          ВАШ ХОД
+          {t('game.yourTurn')}
         </div>
         <div className="flex mb-6 flex-1">
           <PipBoyWindow
-            title={<span className="uppercase">КАРАВАНЫ {caravanStore.enemy?.name} </span>}
+            title={
+              <span className="uppercase">
+                {t('game.enemyCaravans', { name: caravanStore.enemy?.name })}
+              </span>
+            }
             titleContent={
               <span
                 className={cn('w-2 h-2 ms-2 rounded inline-block shadow', {
@@ -183,7 +188,7 @@ const CaravanGamePage = observer(function GamePage() {
         </div>
         <div className="flex-1 flex">
           <PipBoyWindow
-            title={<span>МОИ КАРАВАНЫ</span>}
+            title={<span>{t('game.myCaravans')}</span>}
             titleContent={
               <span
                 className={cn('w-2 h-2 ms-2 rounded inline-block shadow', {
@@ -234,10 +239,10 @@ const CaravanGamePage = observer(function GamePage() {
         />
         <Modal show={showAwaitPlayerModal} onHide={() => {}}>
           <div className="flex flex-col items-center justify-center h-full">
-            <h1 className="text-4xl text-fallout-500 px-4 mb-2">Ожидание игрока</h1>
+            <h1 className="text-4xl text-fallout-500 px-4 mb-2">{t('game.awaitForPlayer')}</h1>
             <CopyToClipboard text={window.location.href}>
               <span className="text-lg text-fallout-500 border px-2 border-fallout-500 cursor-pointer hover:underline">
-                Скопировать ссылку для друга
+                {t('game.copyLink')}
               </span>
             </CopyToClipboard>
             {navigator.share && (
@@ -258,12 +263,12 @@ const CaravanGamePage = observer(function GamePage() {
         </Modal>
         <Modal show={showLoseModal} onHide={() => {}}>
           <div className="flex items-center justify-center h-full">
-            <h1 className="text-4xl text-fallout-500 px-4 mb-2">Вы проиграли</h1>
+            <h1 className="text-4xl text-fallout-500 px-4 mb-2">{t('game.youLost')}</h1>
           </div>
         </Modal>
         <Modal show={showWinModal} onHide={() => {}}>
           <div className="flex items-center justify-center h-full">
-            <h1 className="text-4xl text-fallout-500 px-4 mb-2">Вы победили</h1>
+            <h1 className="text-4xl text-fallout-500 px-4 mb-2">{t('game.youWin')}</h1>
           </div>
         </Modal>
       </main>
