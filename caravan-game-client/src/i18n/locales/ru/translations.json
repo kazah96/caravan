@@ -1,0 +1,41 @@
+{
+  "lobby": {
+    "greetings": "Здарова, {{name}}",
+    "createRoom": "Создать комнату",
+    "rating": {
+      "score": "Рейтинг",
+      "name": "Имя",
+      "wins": "Побед",
+      "loses": "Поражений"
+    },
+    "whatsYourName": "Как тебя звать?",
+    "continue": "Продолжить"
+  },
+  "game": {
+    "yourTurn": "Ваш ход",
+    "awaitForPlayer": "Ждём игрока",
+    "copyLink": "Скопировать ссылку на игру",
+    "youLost": "Вы проиграли",
+    "youWin": "Вы победили",
+    "myCaravans": "МОИ КАРАВАНЫ",
+    "enemyCaravans": "КАРАВАНЫ {{name}}",
+    "quitGame": "Покинуть игру",
+    "howToPlay": "Как играть?",
+    "discardCaravan": "Сбросить",
+    "notFound": "Игра не найдена",
+    "maybeClosed": "Возможно закрыта"
+  },
+  "places": {
+    "Cottonwood": "Коттонвуд-Коув",
+    "Nelson":"Нельсон",
+    "Fort": "Форт",
+    "RedRock": "Ред-Рок",
+    "BoulderCity": "Боулдер-сити",
+    "Dam": "Дамба гувера",
+    "Goodsprings": "Гудспрингс",
+    "Jacobstown": "Джейкобстаун",
+    "Nipton": "Ниптон",
+    "Primm": "Примм",
+    "Novac": "Новак"
+  }
+}

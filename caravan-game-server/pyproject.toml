@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "caravan-game-server"
+version = "0.1.0"
+description = ""
+authors = ["tema <poquepoque27@google.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.110.1"
+uvicorn = {extras = ["standard"], version = "^0.29.0"}
+websockets = "^12.0"
+json-fix = "^1.0.0"
+blinker = "^1.7.0"
+pydantic = "^2.6.4"
+python-socketio = {extras = ["asyncio-client"], version = "^5.11.2"}
+pytest = "^8.1.1"
+pytest-watch = "^4.2.0"
+ptw = "^1.0.1"
+pytest-asyncio = "^0.23.6"
+colorlog = "^6.8.2"
+apscheduler = "^3.10.4"
+peewee = "^3.17.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

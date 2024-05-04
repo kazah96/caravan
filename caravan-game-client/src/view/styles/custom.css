@@ -1,0 +1,230 @@
+@layer base {
+  @font-face {
+    font-family: 'Monofonto';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(@/assets/fonts/Monofonto.ttf) format('woff2');
+  }
+
+  @font-face {
+    font-family: 'NewLetterGotic';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(@/assets/fonts/NewLetterGothicC.ttf) format('woff2');
+  }
+
+  body {
+    background-image: url(@assets/background.png);
+    background-size: cover;
+  }
+  
+  :root {
+    --sidebar-width: 280px;
+    --sidebar-shrink: 70px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f2f2f2;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #bdbdbd;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6e6e6e;
+  }
+
+  input[type='checkbox'] {
+    width: 24px;
+    height: 24px;
+
+    -webkit-appearance: none;
+    appearance: none;
+    /* For iOS < 15 to remove gradient background */
+    /* Not removed via appearance */
+    margin: 0;
+    @apply rounded-md border cursor-pointer;
+  }
+
+  input[type='checkbox']:checked {
+    background-image: url('../../assets/icons/Checkmark/Basic.svg');
+    background-size: auto 50%;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    @apply bg-amber-300 border-0;
+  }
+}
+
+@layer components {
+  .playing-card {
+    width: 60px;
+    height: 100px;
+  }
+  
+
+  @screen md {
+    .playing-card {
+      width: 112px;
+      height: 192px;
+    }
+  }
+
+
+
+  .center-absolute {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+  }
+  .card-shadow {
+    box-shadow: #00000057 0px 0px 4px 1px;
+  }
+
+  .fallout-menu-background {
+    background: #000000ab;
+    box-shadow: #000000c9 0px 0px 15px 9px;
+  }
+
+  .fade-border {
+    border-image: linear-gradient(#f6b73c, #4d9f0c) 30;
+    border-width: 4px;
+    border-style: solid;
+  }
+
+  .b-shadow {
+    box-shadow: 1px 1px 2px 0px rgba(100, 100, 100, 0.75);
+  }
+  .fallout-font {
+    font-family: 'Monofonto';
+
+    /* color: rgb(243, 216, 14); */
+    /* box-shadow: 120px 80px 40px 20px rgb(0, 255, 255); */
+    text-shadow: rgba(0, 0, 0, 0.232) 1px 1px 1px;
+  }
+
+  @keyframes hide {
+    0% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  } 
+
+  .your_turn {
+    animation: hide 3s;
+  }
+
+
+  .tooltip {
+    position: relative;
+  }
+
+  .tooltip .tooltiptext {
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    z-index: 100;
+  }
+
+  .tooltip .tooltiptext::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: black transparent transparent transparent;
+  }
+
+  @keyframes shine {
+    to {
+      background-position-x: -200%;
+    }
+  }
+
+  .skeleton {
+    z-index: 999;
+    background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+    border-radius: 5px;
+    background-size: 200% 100%;
+    animation: 1.5s shine linear infinite;
+    width: 100%;
+    height: 100%;
+  }
+
+  .icon-active path {
+    @apply fill-red-500 !important;
+  }
+
+  .icon-active-green path {
+    @apply fill-green-500 !important;
+  }
+
+  .small-icon {
+    path {
+      @apply fill-gray-500;
+    }
+
+    &:hover {
+      path {
+        @apply fill-gray-600;
+      }
+    }
+  }
+
+  .header {
+    height: 66px;
+    @apply transition-all mt-0 w-full fixed flex items-center px-8 border-b justify-between bg-white z-40;
+  }
+
+  .sidebar {
+    width: 0;
+    @apply fixed border-r h-screen bg-white transition-all overflow-hidden z-50;
+  }
+
+  .page-container {
+    @apply transition-all;
+  }
+
+  @screen xl {
+    .header {
+      width: calc(100% - var(--sidebar-shrink));
+    }
+
+    .page-container {
+      padding-left: var(--sidebar-shrink);
+    }
+
+    .header-shrink {
+      width: calc(100% - var(--sidebar-width));
+    }
+
+    .page-container-shrink {
+      padding-left: var(--sidebar-width);
+    }
+
+    .sidebar {
+      width: var(--sidebar-shrink);
+    }
+  }
+
+  .sidebar-opened {
+    width: var(--sidebar-width);
+  }
+}

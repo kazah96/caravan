@@ -1,0 +1,41 @@
+{
+  "lobby": {
+    "greetings": "Hello, {{name}}",
+    "createRoom": "Create Room",
+    "rating": {
+      "score": "Score",
+      "name": "Name",
+      "wins": "Wins",
+      "loses": "Loses"
+    },
+    "whatsYourName": "Whats your name?",
+    "continue": "Continue"
+  },
+  "game": {
+    "yourTurn": "Your Turn",
+    "awaitForPlayer": "Awaiting player",
+    "copyLink": "Copy game link",
+    "youLost": "You lost",
+    "youWin": "You won",
+    "myCaravans": "MY CARAVANS",
+    "enemyCaravans": "{{name}} CARAVANS",
+    "quitGame": "Quit Game",
+    "howToPlay": "How to Play",
+    "discardCaravan": "Discard",
+    "notFound": "Game Not Found",
+    "maybeClosed": "May be closed"
+  },
+  "places": {
+    "Cottonwood": "Cottonwood Cove",
+    "Nelson":"Nelson",
+    "Fort": "Fort",
+    "RedRock": "Red Rock",
+    "BoulderCity": "Boulder City",
+    "Dam": "Hoover dam",
+    "Goodsprings": "Goodsprings",
+    "Jacobstown": "Jacobstown",
+    "Nipton": "Nipton",
+    "Primm": "Primm",
+    "Novac": "Novac"
+  }
+}
