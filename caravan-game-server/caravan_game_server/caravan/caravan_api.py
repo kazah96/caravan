@@ -48,3 +48,7 @@ async def caravan_subscribe_for_updates(game: GameDependency, user_id: UserIDDep
 @router.get("/{game_id}/get_state", tags=["caravan"])
 async def get_state(game: GameDependency, user_id: UserIDDependency):
     return game.get_game_state(user_id)
+
+@router.get("/{game_id}/rematch", tags=["caravan"])
+async def player_request_rematch(game: GameDependency, user_id: UserIDDependency):
+    return game.player_request_rematch(user_id)

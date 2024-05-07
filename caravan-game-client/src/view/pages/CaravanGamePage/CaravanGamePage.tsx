@@ -19,6 +19,7 @@ import { DndContext, MouseSensor, TouchSensor, useSensor, useSensors } from '@dn
 import { useTranslation } from 'react-i18next';
 import { SingleCaravan } from './SingleCaravan';
 import { BottomPanel } from './BottomPanel';
+import { ResultModal } from './ResultModal';
 
 // function generateRandomCard() {
 //   return {
@@ -81,8 +82,6 @@ const CaravanGamePage = observer(function GamePage() {
 
   const showAwaitPlayerModal =
     !caravanStore.isGameInitialized || caravanStore.currentState === GameState.WAITING;
-  const showLoseModal = caravanStore.gameState === 'lose';
-  const showWinModal = caravanStore.gameState === 'win';
 
   return (
     <DndContext
@@ -261,16 +260,9 @@ const CaravanGamePage = observer(function GamePage() {
             )}
           </div>
         </Modal>
-        <Modal show={showLoseModal} onHide={() => {}}>
-          <div className="flex items-center justify-center h-full">
-            <h1 className="text-4xl text-fallout-500 px-4 mb-2">{t('game.youLost')}</h1>
-          </div>
-        </Modal>
-        <Modal show={showWinModal} onHide={() => {}}>
-          <div className="flex items-center justify-center h-full">
-            <h1 className="text-4xl text-fallout-500 px-4 mb-2">{t('game.youWin')}</h1>
-          </div>
-        </Modal>
+        {(caravanStore.gameState === 'win' || caravanStore.gameState === 'lose') && (
+          <ResultModal modalVariant={caravanStore.gameState} showModal />
+        )}
       </main>
     </DndContext>
   );

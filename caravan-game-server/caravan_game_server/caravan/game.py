@@ -39,6 +39,10 @@ class Game:
         self.state: GameState = GameState.WAITING
         self.game = GameEngine()
         self.created_at = created_at
+        self.players_wanna_rematch: dict[PlayerSides, bool] = {
+            PlayerSides.PLAYER_1: False,
+            PlayerSides.PLAYER_2: False,
+        }
 
         self._update_subscribers: list[asyncio.Event] = []
 
@@ -47,24 +51,36 @@ class Game:
             return self.joined_players[PlayerSides.PLAYER_1]
         if self.game.game_state == CaravanState.PLAYER_2_WON:
             return self.joined_players[PlayerSides.PLAYER_2]
-        
+
     def get_loser_user_id(self):
         if self.game.game_state == CaravanState.PLAYER_1_WON:
             return self.joined_players[PlayerSides.PLAYER_2]
         if self.game.game_state == CaravanState.PLAYER_2_WON:
             return self.joined_players[PlayerSides.PLAYER_1]
-        
 
     def is_game_active(self):
         return self.state == GameState.IN_GAME
 
     def _init_game(self):
-        self.game.init_player(PlayerSides.PLAYER_1)
-        self.game.init_player(PlayerSides.PLAYER_2)
         self.game.init_game()
         self.state = GameState.IN_GAME
         self._notify_subscribers()
 
+    def player_request_rematch(self, player_id: str):
+        player_side = self._get_side_by_player_id(player_id)
+        self.players_wanna_rematch[player_side] = True
+
+        if list(self.players_wanna_rematch.values()) == [True, True]:
+            self._init_rematch()
+
+    def _init_rematch(self):
+        self.players_wanna_rematch = {
+            PlayerSides.PLAYER_1: False,
+            PlayerSides.PLAYER_2: False,
+        }
+        self._get_game_instance().init_game()
+        self.state = GameState.IN_GAME
+        self._update()
 
     def _get_game_instance(self):
         if self.game is None:
@@ -92,9 +108,11 @@ class Game:
         if new_state.state in [CaravanState.PLAYER_1_WON, CaravanState.PLAYER_2_WON]:
             anyio.run(self._close_with_delay)
 
-
     async def _close_with_delay(self):
-        await asyncio.sleep(5)
+        await asyncio.sleep(11)
+        if self.state == GameState.IN_GAME:
+            return
+        
         self._handle_close_game()
 
     def _handle_close_game(self):

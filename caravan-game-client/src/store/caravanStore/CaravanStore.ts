@@ -173,6 +173,10 @@ export class CaravanStore {
     }
   }
 
+  public async requestRematch() {
+    this.api.get(`/caravan/${this.gameID}/rematch`);
+  }
+
   @action.bound
   public removeCard(index: number) {
     const newCards = [...this.myHand];

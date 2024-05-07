@@ -54,7 +54,7 @@ class GameEngine:
             print(" ".join([str(v) for v in value.cards]))
             print("______")
 
-    def init_player(self, player: PlayerSides):
+    def _init_player(self, player: PlayerSides):
         hand, deck = get_random_cards_from_deck(
             generate_whole_deck(), INITIAL_HAND_SIZE
         )
@@ -62,6 +62,13 @@ class GameEngine:
         self.current_hands[player] = hand
 
     def init_game(self):
+
+        self.move_counter = 0
+        self.caravans: Dict[str, Caravan] = {}
+        self.current_hands: Dict[PlayerSides, List[Card]] = {}
+        self.decks: Dict[PlayerSides, List[Card]] = {}
+        self.game_state = CaravanState.PLAYING
+
         caravan_names = generate_random_caravan_names(6)
 
         for player_side in [PlayerSides.PLAYER_1, PlayerSides.PLAYER_2]:
@@ -74,8 +81,8 @@ class GameEngine:
                     type=CaravanNumber(number),
                 )
 
-        self.init_player(PlayerSides.PLAYER_1)
-        self.init_player(PlayerSides.PLAYER_2)
+        self._init_player(PlayerSides.PLAYER_1)
+        self._init_player(PlayerSides.PLAYER_2)
 
         self.player_turn = PlayerSides.PLAYER_1
 
