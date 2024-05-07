@@ -60,6 +60,7 @@ export function SingleCaravan(props: {
 
   useEffect(() => {
     if (
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       !R.isDeepEqual(prevLastMove, lastMove) &&
       prevLastMove !== lastMove &&
       !showAnimation &&
