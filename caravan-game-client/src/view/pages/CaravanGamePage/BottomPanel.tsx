@@ -13,6 +13,7 @@ import * as R from 'remeda';
 import { CaravanStore } from '@store/caravanStore/CaravanStore';
 import { useTranslation } from 'react-i18next';
 import { DrawCard } from './DrawCard';
+import { LogsModal } from './LogsModal';
 
 type Props = {
   selectedCardIndex: number | null;
@@ -24,6 +25,7 @@ const BottomPanel = observer(function BottomPanel(props: Props) {
   const { handleClickHandCard, selectedCardIndex } = props;
   const { t } = useTranslation();
   const [showHelp, setShowHelp] = useState<boolean>(false);
+  const [showLogs, setShowLogs] = useState<boolean>(false);
 
   return (
     <>
@@ -32,6 +34,7 @@ const BottomPanel = observer(function BottomPanel(props: Props) {
         buttons={[
           { callback: () => {}, label: t('game.quitGame') },
           { callback: () => setShowHelp(true), label: t('game.howToPlay') },
+          { callback: () => setShowLogs(true), label: t('game.showLogs') },
         ]}
       >
         <div className={cn('flex relative p-4 justify-center', {})}>
@@ -62,6 +65,7 @@ const BottomPanel = observer(function BottomPanel(props: Props) {
           <p>* Сам без понятия, в ютубе посмотри</p>
         </div>
       </Modal>
+      <LogsModal onHide={() => setShowLogs(false)} showModal={showLogs} />
     </>
   );
 });

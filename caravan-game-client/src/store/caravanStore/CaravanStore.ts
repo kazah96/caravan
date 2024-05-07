@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import { action, computed, makeObservable, observable } from 'mobx';
-import { Caravan, Card, Players } from '@model/base';
-import { isNumber, mapToObj } from 'remeda';
+import { Caravan, Card, CommandLog, Players } from '@model/base';
+import { isArray, isNumber, mapToObj } from 'remeda';
 import axios, { AxiosResponse } from 'axios';
 import { GameData, User } from './messages';
 import { ApiStore } from '../api/ApiStore';
@@ -17,6 +17,7 @@ type StateResponse = {
   state: 0 | 1 | 2 | 3;
   enemy: User;
   data?: GameData;
+  logs: CommandLog[];
 };
 
 const MAP_STATE_NUMBER_TO_STATE = {
@@ -52,6 +53,8 @@ export class CaravanStore {
   @observable gameID: string | null = null;
 
   @observable error = '';
+
+  @observable logs: CommandLog[] = [];
 
   @computed public get gameState() {
     if (this.currentState === GameState.IN_GAME) {
@@ -94,6 +97,7 @@ export class CaravanStore {
         initialStateResponse.data.enemy,
         initialStateResponse.data.data,
       );
+      this.handleLogs(initialStateResponse.data.logs);
 
       this.subscribeForUpdates(gameId);
       this.setGameInitialized(true);
@@ -123,12 +127,22 @@ export class CaravanStore {
           stateResponse.data.enemy,
           stateResponse.data.data,
         );
+        this.handleLogs(stateResponse.data.logs);
       } catch {
         this.setGameInitialized(false);
         this.setError('Game has been closed');
         flag = false;
         break;
       }
+    }
+  }
+
+  @action.bound
+  handleLogs(logs: CommandLog[]) {
+    if (isArray(logs)) {
+      this.logs = logs;
+    } else {
+      this.logs = [];
     }
   }
 

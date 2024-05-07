@@ -36,6 +36,7 @@ class GameEngine:
         self.current_hands: Dict[PlayerSides, List[Card]] = {}
         self.decks: Dict[PlayerSides, List[Card]] = {}
         self.game_state = CaravanState.PLAYING
+        self.logs = []
 
     def get_game_state_data(self):
         game_state_data = GameStateData(
@@ -62,7 +63,7 @@ class GameEngine:
         self.current_hands[player] = hand
 
     def init_game(self):
-
+        self.logs = []
         self.move_counter = 0
         self.caravans: Dict[str, Caravan] = {}
         self.current_hands: Dict[PlayerSides, List[Card]] = {}
@@ -94,6 +95,8 @@ class GameEngine:
             return
 
         command.execute(self)
+        comma = command.get_json_command(player)
+        self.logs.append(comma)
 
         next_turn_player = (
             PlayerSides.PLAYER_1
@@ -151,6 +154,6 @@ class GameEngine:
         self.game_state = CaravanState.PLAYING
 
         winner = self.check_win_for_players()
-        
+
         if winner:
             self.game_state = winner

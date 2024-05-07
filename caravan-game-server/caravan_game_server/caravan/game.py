@@ -112,7 +112,7 @@ class Game:
         await asyncio.sleep(11)
         if self.state == GameState.IN_GAME:
             return
-        
+
         self._handle_close_game()
 
     def _handle_close_game(self):
@@ -147,6 +147,7 @@ class Game:
                 "state": self.state,
                 "enemy": enemy,
                 "data": self._get_game_instance().get_game_state_data(),
+                "logs": self._get_game_instance().logs,
             }
 
     def join_player(self, player_id: str):

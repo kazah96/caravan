@@ -23,7 +23,8 @@
     "howToPlay": "How to Play",
     "discardCaravan": "Discard",
     "notFound": "Game Not Found",
-    "maybeClosed": "May be closed"
+    "maybeClosed": "May be closed",
+    "showLogs": "Show logs"
   },
   "places": {
     "Cottonwood": "Cottonwood Cove",
@@ -37,5 +38,10 @@
     "Nipton": "Nipton",
     "Primm": "Primm",
     "Novac": "Novac"
+  },
+  "commands": {
+    "put_card": "{{player_name}} put {{card}} to {{caravan_name}}",
+    "drop_card": "{{player_name}} discarded card",
+    "drop_caravan": "{{player_name}} discarded {{caravan_name}}"
   }
 }

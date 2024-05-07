@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Dict, List, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, RootModel
 
 # CARAVAN_NAMES = [
 #     "Коттонвуд-Коув",

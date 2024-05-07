@@ -30,6 +30,13 @@ export type Caravan = {
   name: string;
 };
 
+export const MAP_SUIT_TO_VIEW = {
+  DIAMONDS: '♦',
+  HEARTS: '♥',
+  CLUBS: '♣',
+  SPADES: '♠',
+};
+
 export const MAP_VARIANT_TO_VIEW: Record<CardRank, string> = {
   ACE: 'A',
   TWO: '2',
@@ -75,3 +82,25 @@ export const POINT_CARD_RANKS = [
   'NINE',
   'TEN',
 ];
+
+export type PutCardCommandLog = {
+  command_name: 'put_card';
+  player_side: Players;
+  card: Card;
+  caravan_name: string;
+  card_in_caravan: number;
+};
+
+export type DropCaravanCommandLog = {
+  command_name: 'drop_caravan';
+  player_side: Players;
+  caravan_name: string;
+};
+
+export type DropCardCommandLog = {
+  command_name: 'drop_card';
+  player_side: Players;
+  card: Card;
+};
+
+export type CommandLog = PutCardCommandLog | DropCardCommandLog | DropCaravanCommandLog;
