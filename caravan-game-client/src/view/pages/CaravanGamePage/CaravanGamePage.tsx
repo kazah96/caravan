@@ -171,6 +171,7 @@ const CaravanGamePage = observer(function GamePage() {
                   key={value.name}
                   isMyTurn={caravanStore.isMyTurn}
                   areCaravansFilled={value.cards.length > 0}
+                  lastMove={R.last(caravanStore.logs)}
                   selectedCard={
                     R.isNumber(selectedCardIndex)
                       ? caravanStore.myHand[selectedCardIndex]
@@ -210,6 +211,7 @@ const CaravanGamePage = observer(function GamePage() {
                   selectedIndex={
                     ev?.caravanName === value.name && ev?.index !== null ? ev?.index : undefined
                   }
+                  lastMove={R.last(caravanStore.logs)}
                   isMyTurn={caravanStore.isMyTurn}
                   areCaravansFilled={myCaravansList
                     .filter(caravan => caravan.name !== value.name)

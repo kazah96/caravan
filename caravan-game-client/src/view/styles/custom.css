@@ -171,6 +171,20 @@
     animation: 10s progress-bar linear;
   }
 
+  .drop-in {
+    animation: .75s drop-in ease-out;
+    /* transform: translate(-100px, -1000px); */
+  }
+
+  @keyframes drop-in {
+    from {
+      transform: translate(-100px, -600px);
+    }
+    to {
+      transform: translate(0, 0);
+    }
+  }
+
 
   .skeleton {
     z-index: 999;

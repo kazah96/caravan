@@ -7,7 +7,7 @@ import { useDroppable } from '@dnd-kit/core';
 import * as R from 'remeda';
 import { useTranslation } from 'react-i18next';
 import { DrawCard } from './DrawCard';
-import { Card } from '../../../model/base';
+import { Card, CommandLog } from '../../../model/base';
 import { calculateCaravanStrength, canPutCard } from './utils';
 
 function Droppable(
@@ -34,6 +34,7 @@ export function SingleCaravan(props: {
   dropCaravan?: () => void;
   isMyCaravan?: boolean;
   headerPosition?: 'top' | 'bottom';
+  lastMove?: CommandLog;
 }) {
   const [showSuggestedCard, setShowSuggestedCard] = useState(false);
   const { t } = useTranslation();
@@ -48,18 +49,56 @@ export function SingleCaravan(props: {
     areCaravansFilled,
     isMyCaravan,
     headerPosition,
+    lastMove,
   } = props;
   const [caravanCards, setCaravanCards] = useState(cards);
+  const [prevLastMove, setPrevLastMove] = useState(lastMove);
+
+  const [animationDelayCaravanCards, setAnimationDelayCaravanCards] = useState(cards);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [animateCardID, setAnimateCardID] = useState<null | number>(null);
 
   useEffect(() => {
-    const newCards = [...cards];
+    if (
+      !R.isDeepEqual(prevLastMove, lastMove) &&
+      prevLastMove !== lastMove &&
+      !showAnimation &&
+      lastMove?.command_name === 'put_card' &&
+      lastMove.caravan_name === name &&
+      isMyTurn
+    ) {
+      setShowAnimation(true);
+      setAnimateCardID(lastMove?.card_in_caravan);
+
+      setTimeout(() => {
+        setShowAnimation(false);
+        setPrevLastMove(lastMove);
+        setAnimateCardID(null);
+        setAnimationDelayCaravanCards(cards);
+      }, 1500);
+    } else if (!showAnimation) {
+      setAnimationDelayCaravanCards(cards);
+    }
+  }, [lastMove, prevLastMove, showAnimation, name, isMyTurn, cards]);
+
+  useEffect(() => {
+    const newCards = [...animationDelayCaravanCards];
+
+    if (
+      lastMove &&
+      lastMove.command_name === 'put_card' &&
+      lastMove.caravan_name === name &&
+      showAnimation
+    ) {
+      newCards.splice(lastMove.card_in_caravan + 1, 0, lastMove.card);
+    }
 
     if (R.isNumber(selectedIndex) && selectedCard) {
       newCards.splice(selectedIndex + 1, 0, selectedCard);
     }
 
     setCaravanCards(newCards);
-  }, [selectedIndex, selectedCard, cards]);
+  }, [selectedIndex, selectedCard, lastMove, animationDelayCaravanCards, name, showAnimation]);
 
   const canAdd =
     selectedCard !== undefined &&
@@ -116,6 +155,7 @@ export function SingleCaravan(props: {
                 key={key}
                 selectedCard={selectedCard}
                 selectedIndex={selectedIndex}
+                dropInAnimation={animateCardID !== null && key === animateCardID + 1}
               />
             ))}
           </div>
@@ -158,9 +198,19 @@ function RenderCard(props: {
   selectedCard?: Card;
   isMyCaravan?: boolean;
   selectedIndex?: number;
+  dropInAnimation?: boolean;
 }) {
-  const { areCaravansFilled, index, item, name, selectedCard, cards, isMyCaravan, selectedIndex } =
-    props;
+  const {
+    areCaravansFilled,
+    dropInAnimation,
+    index,
+    item,
+    name,
+    selectedCard,
+    cards,
+    isMyCaravan,
+    selectedIndex,
+  } = props;
   return (
     <Droppable
       caravanName={name}
@@ -175,14 +225,23 @@ function RenderCard(props: {
       key={index + item.rank + item.suit}
     >
       <div
-        className={cn(`absolute first:-mt-0 z-1 hover:-translate-y-2 transition-all`)}
+        className={cn(`absolute first:-mt-0 z-1 hover:-translate-y-2 rotate-0 transition-all`, {
+          // 'drop-in': dropInAnimation,
+        })}
         style={{
           transform: `rotate(${index * 12 - (cards.length - 1) * 6}deg) scale(${selectedIndex !== undefined && selectedIndex + 1 === index ? 1.2 : 1})`,
           marginTop: `${index * 4}px`,
+          transition: 'all .2s',
           marginLeft: `${index * 12}px`,
         }}
       >
-        <DrawCard index={index} card={item} />
+        <div
+          className={cn(``, {
+            'drop-in': dropInAnimation,
+          })}
+        >
+          <DrawCard index={index} card={item} />
+        </div>
       </div>
     </Droppable>
   );

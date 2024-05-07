@@ -18,7 +18,7 @@ const LogsModal = observer(function LogsModal(props: Props) {
 
   return (
     <Modal show={showModal} onHide={() => onHide()}>
-      <div className="flex p-4 flex-col-reverse items-start justify-center h-full text-fallout-500 text-left ">
+      <div className="max-h-[90vh] flex p-4 flex-col-reverse items-start justify-center h-full text-fallout-500 text-left overflow-y-auto">
         {caravanStore.logs.map((log, idx) => (
           <div key={idx} className="last:bg-red-800">
             {idx}: {translateLogs(log)}

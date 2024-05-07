@@ -9,7 +9,7 @@ function FalloutWindow(props: Props) {
   return (
     <div
       className={cn(
-        'relative min-w-80 max-w-screen-lg max-h-[80%] min-h-[160px] border-fallout-500 fallout-menu-background border overflow-y-auto',
+        'relative min-w-80 max-w-screen-lg  min-h-[160px] border-fallout-500 fallout-menu-background border overflow-y-auto',
         className,
       )}
     >
