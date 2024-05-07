@@ -5,6 +5,7 @@ import { isArray, isNumber, mapToObj } from 'remeda';
 import axios, { AxiosResponse } from 'axios';
 import { GameData, User } from './messages';
 import { ApiStore } from '../api/ApiStore';
+import { UserStore } from '../UserStore';
 
 export enum GameState {
   WAITING = 0,
@@ -28,7 +29,10 @@ const MAP_STATE_NUMBER_TO_STATE = {
 } as const;
 
 export class CaravanStore {
-  constructor(private readonly api: ApiStore) {
+  constructor(
+    private readonly api: ApiStore,
+    private readonly userStore: UserStore,
+  ) {
     makeObservable(this);
   }
 
@@ -77,6 +81,14 @@ export class CaravanStore {
       return 'lose';
     }
   }
+
+  public getNameForPlayerSide = (playerSide: Players) => {
+    if (this.myPlayer === playerSide) {
+      return this.userStore.userName;
+    }
+
+    return this.enemy?.name;
+  };
 
   public async initGame(gameId: string) {
     this.setGameInitialized(false);

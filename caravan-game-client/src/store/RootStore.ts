@@ -11,7 +11,7 @@ export class RootStore {
 
   public userStore = new UserStore(this.apiStore);
 
-  public caravanStore = new CaravanStore(this.apiStore);
+  public caravanStore = new CaravanStore(this.apiStore, this.userStore);
 
   public gameStore = new GameStore(this.apiStore);
 }

@@ -29,21 +29,23 @@ const LogsModal = observer(function LogsModal(props: Props) {
   );
 
   function translateLogs(log: CommandLog) {
+    const playerName = caravanStore.getNameForPlayerSide(log.player_side);
+
     if (log.command_name === 'put_card') {
       return t('commands.put_card', {
-        player_name: log.player_side,
+        player_name: playerName,
         caravan_name: log.caravan_name,
         card: MAP_SUIT_TO_VIEW[log.card.suit] + MAP_VARIANT_TO_VIEW[log.card.rank],
       });
     }
     if (log.command_name === 'drop_card') {
       return t('commands.drop_card', {
-        player_name: log.player_side,
+        player_name: playerName,
       });
     }
     if (log.command_name === 'drop_caravan') {
       return t('commands.drop_caravan', {
-        player_name: log.player_side,
+        player_name: playerName,
         caravan_name: log.caravan_name,
       });
     }
