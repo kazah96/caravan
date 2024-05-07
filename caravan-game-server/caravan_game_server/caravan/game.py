@@ -78,7 +78,7 @@ class Game:
             PlayerSides.PLAYER_1: False,
             PlayerSides.PLAYER_2: False,
         }
-        self._get_game_instance().init_game()
+        self._get_game_instance().init_game(is_rematch=True)
         self.state = GameState.IN_GAME
         self._update()
 

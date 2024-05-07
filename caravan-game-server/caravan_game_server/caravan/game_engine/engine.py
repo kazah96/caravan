@@ -31,6 +31,8 @@ def get_caravans_by_player(caravans: Dict[str, Caravan], player: PlayerSides):
 class GameEngine:
     def __init__(self) -> None:
         self.move_counter = 0
+        self.prev_first_player = PlayerSides.PLAYER_1
+
         self.player_turn = PlayerSides.PLAYER_1
         self.caravans: Dict[str, Caravan] = {}
         self.current_hands: Dict[PlayerSides, List[Card]] = {}
@@ -62,7 +64,7 @@ class GameEngine:
         self.decks[player] = deck
         self.current_hands[player] = hand
 
-    def init_game(self):
+    def init_game(self, is_rematch=False):
         self.logs = []
         self.move_counter = 0
         self.caravans: Dict[str, Caravan] = {}
@@ -86,6 +88,14 @@ class GameEngine:
         self._init_player(PlayerSides.PLAYER_2)
 
         self.player_turn = PlayerSides.PLAYER_1
+
+        if is_rematch:
+            self.player_turn = (
+                PlayerSides.PLAYER_1
+                if self.prev_first_player == PlayerSides.PLAYER_2
+                else PlayerSides.PLAYER_2
+            )
+            self.prev_first_player = self.player_turn
 
     def make_turn(self, player: PlayerSides, command: "CaravanCommand"):
         self.move_counter += 1
