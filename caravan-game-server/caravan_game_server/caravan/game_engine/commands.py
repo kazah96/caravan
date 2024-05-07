@@ -88,8 +88,9 @@ class PutCardCommand(CaravanCommand):
         game_instance.current_hands[current_player].pop(index_in_hand)
 
         if (len(game_instance.current_hands[current_player]) < HAND_SIZE):
-            new_card = game_instance.decks[current_player].pop()
-            game_instance.current_hands[current_player].append(new_card)
+            if len(game_instance.decks[current_player]) > 0:
+                new_card = game_instance.decks[current_player].pop()
+                game_instance.current_hands[current_player].append(new_card)
 
 
 class DropCaravanCommand(CaravanCommand):
