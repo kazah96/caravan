@@ -7,18 +7,26 @@ import { observer } from 'mobx-react-lite';
 import { useRootStore } from '@hooks/useRootStore';
 import cn from 'classnames';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { PipBoyWindow } from '@components/ui/PipBoyWindow';
 import * as R from 'remeda';
 import { useTranslation } from 'react-i18next';
+import { Modal } from '@components/ui/utils/modal';
 
 const GamePage = observer(function GamePage() {
   const { gameStore, userStore } = useRootStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [showAllowNotificationModal, setShowAllowNotificationModal] = useState(false);
   useEffect(() => {
     userStore.requestUsersStats();
   }, [userStore]);
+
+  useEffect(() => {
+    if ('Notification' in window && window.Notification.permission === 'default') {
+      setShowAllowNotificationModal(true);
+    }
+  }, []);
 
   const userStat = R.pipe(
     userStore.userStats,
@@ -88,8 +96,36 @@ const GamePage = observer(function GamePage() {
           </tbody>
         </table>
       </PipBoyWindow>
+      <Modal show={showAllowNotificationModal} onHide={() => setShowAllowNotificationModal(false)}>
+        <div className="flex flex-col items-center justify-center h-full text-fallout-500 p-4 ">
+          <h1 className="text-4xl px-4 mb-2">Enable notifications?</h1>
+          <div className="flex justify-center items-center gap-4">
+            <button
+              className="hover:underline cursor-pointer text-2xl bg-fallout-500 px-4 b-shadow text-black"
+              onClick={() => {
+                handleRequestNotifications();
+              }}
+            >
+              Yes
+            </button>
+            <button
+              className="hover:underline cursor-pointer text-2xl bg-fallout-500 px-4 b-shadow text-black"
+              onClick={() => {
+                setShowAllowNotificationModal(false);
+              }}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      </Modal>
     </main>
   );
+
+  async function handleRequestNotifications() {
+    await window.Notification.requestPermission();
+    setShowAllowNotificationModal(false);
+  }
 
   async function handleCreateRoom(isPublic = false) {
     const roomID = await gameStore.createGame(isPublic);
