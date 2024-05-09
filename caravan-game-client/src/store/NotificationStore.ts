@@ -13,7 +13,7 @@ const ALIVE_TIME = 6000;
 export class NotificationStore {
   constructor() {
     makeObservable(this);
-    Notification.requestPermission();
+    // Notification.requestPermission();
   }
 
   notifications = observable.array<Notification>([]);
