@@ -21,6 +21,8 @@ pytest-asyncio = "^0.23.6"
 colorlog = "^6.8.2"
 apscheduler = "^3.10.4"
 peewee = "^3.17.3"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 
 
 [build-system]
