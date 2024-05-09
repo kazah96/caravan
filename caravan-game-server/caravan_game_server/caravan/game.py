@@ -32,6 +32,7 @@ class GameState(Enum):
 
 class Game:
     on_game_closed = Signal()
+    on_game_winner = Signal()
 
     def __init__(self, game_name: Optional[str], created_at: datetime.datetime):
         self.game_name = game_name
@@ -106,6 +107,7 @@ class Game:
         self._notify_subscribers()
 
         if new_state.state in [CaravanState.PLAYER_1_WON, CaravanState.PLAYER_2_WON]:
+            self.on_game_winner.send(self)
             anyio.run(self._close_with_delay)
 
     async def _close_with_delay(self):

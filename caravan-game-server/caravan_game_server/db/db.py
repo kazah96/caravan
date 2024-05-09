@@ -6,9 +6,9 @@ db = SqliteDatabase(DATABASE_NAME)
 
 
 class User(Model):
-    id = CharField(primary_key=True, unique=True)
-    name = CharField()
-
+    id = AutoField(primary_key=True, unique=True)
+    name = CharField(unique=True)
+    password = CharField()
     created_at = DateTimeField()
 
     class Meta:

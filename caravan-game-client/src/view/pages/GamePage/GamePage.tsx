@@ -7,7 +7,6 @@ import { observer } from 'mobx-react-lite';
 import { useRootStore } from '@hooks/useRootStore';
 import cn from 'classnames';
 import { useNavigate } from 'react-router-dom';
-import { FalloutWindow } from '@components/ui/FalloutWindow';
 import { useEffect } from 'react';
 import { PipBoyWindow } from '@components/ui/PipBoyWindow';
 import * as R from 'remeda';
@@ -36,11 +35,19 @@ const GamePage = observer(function GamePage() {
         {},
       )}
     >
-      <FalloutWindow className="w-full">
-        <div className="flex flex-col items-center mt-6">
-          <h1 className="text-4xl text-fallout-500 px-4 mb-2">
-            {t('lobby.greetings', { name: userStore.userName })}
-          </h1>
+      <PipBoyWindow
+        className="w-full mb-6"
+        title={userStore.userName}
+        buttons={[
+          {
+            label: 'Log out',
+            callback: () => {
+              userStore.handleLogOff();
+            },
+          },
+        ]}
+      >
+        <div className="flex flex-col items-center ">
           <button
             className="hover:underline cursor-pointer text-2xl bg-fallout-500 px-4 b-shadow"
             onClick={() => {
@@ -50,7 +57,7 @@ const GamePage = observer(function GamePage() {
             {t('lobby.createRoom')}
           </button>
         </div>
-      </FalloutWindow>
+      </PipBoyWindow>
       <PipBoyWindow className="mt-4" title={t('lobby.rating.score')}>
         <table className="w-full text-xl text-fallout-300 text-start  font-[NewLetterGotic]">
           <thead className="border-b border-fallout-500 ">

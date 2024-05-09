@@ -51,6 +51,7 @@ export class ApiStore {
       headers: {
         'Content-Type': 'application/json',
         'User-Id': getUserID(),
+        Authorization: `Bearer ${window.localStorage.getItem('access_token')}`,
       },
     };
   }

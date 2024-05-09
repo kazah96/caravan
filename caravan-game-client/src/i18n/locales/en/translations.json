@@ -2,6 +2,8 @@
   "lobby": {
     "greetings": "Hello, {{name}}",
     "createRoom": "Create Room",
+    "name": "Name",
+    "password": "Password",
     "rating": {
       "score": "Score",
       "name": "Name",

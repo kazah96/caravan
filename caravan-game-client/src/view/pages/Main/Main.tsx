@@ -13,6 +13,7 @@ const Main = observer(function Main() {
       <Routes>
         <Route path="/" element={<Navigate to="/game" />} />
         <Route path="/game" element={<GamePage />} />
+        {/* <Route path="/register" element={<RegisterPage />} /> */}
         <Route path="/caravan/:id" element={<CaravanGamePage />} />
         <Route path="*" element={<div>404</div>} />
       </Routes>

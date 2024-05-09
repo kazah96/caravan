@@ -1,20 +1,15 @@
-import datetime
+from datetime import datetime
+from caravan_game_server.users.crypto import verify_password
 from caravan_game_server.db.db import User as UserDBModel, UserGame
 from caravan_game_server.users.model import User
-from pydantic import ValidationError, TypeAdapter
 from peewee import DoesNotExist, fn, JOIN
 
-TUserStorage = dict[str, User]
 
-user_storage: TUserStorage = {}
-userStorageModel = TypeAdapter(TUserStorage)
+class UserAlreadyExists(Exception):
+    pass
 
 
 class UserStorage:
-    def __init__(self, storage_path: str):
-        self.storage_path = storage_path
-        self.storage: TUserStorage = {}
-
     def get_user_by_id(self, user_id: str) -> User | None:
         try:
             user_from_db = UserDBModel.get_by_id(pk=user_id)
@@ -23,14 +18,21 @@ class UserStorage:
         except DoesNotExist:
             return None
 
-    def create_new_user(self, id: str, name: str) -> User:
-        user = User(
-            id=id,
-            name=name,
-        )
+    def create_new_user(self, name: str, hashed_password: str) -> User:
+        try:
+            UserDBModel.get(UserDBModel.name == name)
+            raise UserAlreadyExists()
+        except DoesNotExist:
+            pass
 
-        u = UserDBModel.create(name=name, id=id, created_at=datetime.datetime.now())
+        u = UserDBModel.create(
+            name=name,
+            password=hashed_password,
+            created_at=datetime.now(),
+        )
         u.save()
+
+        user = User(id=u.id, name=u.name)
 
         return user
 
@@ -60,8 +62,17 @@ class UserStorage:
 
         return list(result_dict.values())
 
+    def authenticate_user(self, username: str, password: str) -> UserDBModel | None:
+        try:
+            user = UserDBModel.get(UserDBModel.name == username)
+            result = verify_password(password, user.password)
+            if result:
+                return user
+            else:
+                return None
 
-USER_STORAGE_FILE = "./test_users.json"
-storage = UserStorage(USER_STORAGE_FILE)
+        except DoesNotExist:
+            return None
 
-storage.get_users_stat()
+
+storage = UserStorage()
