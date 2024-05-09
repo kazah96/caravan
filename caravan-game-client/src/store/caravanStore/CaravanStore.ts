@@ -90,6 +90,20 @@ export class CaravanStore {
     return this.enemy?.name;
   };
 
+  @action.bound
+  public resetGame() {
+    this.setGameInitialized(false);
+    this.setError('');
+    this.currentState = GameState.WAITING;
+    this.currentTurn = 'player1';
+    this.enemy = null;
+    this.logs = [];
+    this.totalDeckCount = 0;
+    this.myCaravans = {};
+    this.enemyCaravans = {};
+    this.myHand = [];
+  }
+
   public async initGame(gameId: string) {
     this.setGameInitialized(false);
     this.setError('');

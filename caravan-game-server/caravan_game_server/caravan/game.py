@@ -34,7 +34,10 @@ class Game:
     on_game_closed = Signal()
     on_game_winner = Signal()
 
-    def __init__(self, game_name: Optional[str], created_at: datetime.datetime):
+    def __init__(
+        self, game_name: Optional[str], created_at: datetime.datetime, is_private=True
+    ):
+        self.is_private = is_private
         self.game_name = game_name
         self.joined_players: dict[PlayerSides, str] = {}
         self.state: GameState = GameState.WAITING

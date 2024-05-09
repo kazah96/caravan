@@ -19,3 +19,4 @@ class CaravanDiscardCaravanRequest(BaseModel):
 
 class CreateRoomRequest(BaseModel):
     room_name: Optional[str] = ""
+    is_private: Optional[bool] = True

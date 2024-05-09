@@ -47,7 +47,7 @@ const GamePage = observer(function GamePage() {
           },
         ]}
       >
-        <div className="flex flex-col items-center ">
+        <div className="flex justify-center items-center gap-4">
           <button
             className="hover:underline cursor-pointer text-2xl bg-fallout-500 px-4 b-shadow"
             onClick={() => {
@@ -55,6 +55,14 @@ const GamePage = observer(function GamePage() {
             }}
           >
             {t('lobby.createRoom')}
+          </button>
+          <button
+            className="hover:underline cursor-pointer text-2xl bg-fallout-500 px-4 b-shadow"
+            onClick={() => {
+              handlePublicRoom();
+            }}
+          >
+            {t('lobby.createPublicRoom')}
           </button>
         </div>
       </PipBoyWindow>
@@ -83,9 +91,19 @@ const GamePage = observer(function GamePage() {
     </main>
   );
 
-  async function handleCreateRoom() {
-    const roomID = await gameStore.createGame();
+  async function handleCreateRoom(isPublic = false) {
+    const roomID = await gameStore.createGame(isPublic);
     navigate(`/caravan/${roomID}`);
+  }
+
+  async function handlePublicRoom() {
+    const freeRooms = await gameStore.getOpenRooms();
+
+    if (freeRooms.length > 0) {
+      navigate(`/caravan/${freeRooms[0]}`);
+    } else {
+      handleCreateRoom(true);
+    }
   }
 });
 

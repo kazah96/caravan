@@ -1,7 +1,8 @@
 {
   "lobby": {
     "greetings": "Здарова, {{name}}",
-    "createRoom": "Создать комнату",
+    "createRoom": "Играть с другом",
+    "createPublicRoom": "Играть с рандомом",
     "rating": {
       "score": "Рейтинг",
       "name": "Имя",

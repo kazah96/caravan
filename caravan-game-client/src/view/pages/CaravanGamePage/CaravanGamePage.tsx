@@ -36,6 +36,11 @@ import { ResultModal } from './ResultModal';
 //   return cards;
 // }
 
+function spawnNotification(body: string, title: string) {
+  // eslint-disable-next-line no-new
+  new Notification(title, { body });
+}
+
 const CaravanGamePage = observer(function GamePage() {
   const params = useParams();
   const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>();
@@ -44,6 +49,35 @@ const CaravanGamePage = observer(function GamePage() {
   const { t } = useTranslation();
   const enemyCaravansList = Object.values(caravanStore.enemyCaravans);
   const myCaravansList = Object.values(caravanStore.myCaravans);
+  const [prevGameState, setPrevGameState] = useState<number | null>(null);
+
+  useEffect(() => {
+    caravanStore.resetGame();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (
+      caravanStore.currentState === GameState.IN_GAME &&
+      prevGameState === GameState.WAITING &&
+      caravanStore.isGameInitialized
+    ) {
+      if (Notification.permission === 'granted') {
+        spawnNotification(`${caravanStore.enemy?.name} connected to game`, 'Caravan');
+      }
+    }
+  }, [
+    caravanStore.currentState,
+    caravanStore.enemy?.name,
+    caravanStore.isGameInitialized,
+    prevGameState,
+  ]);
+
+  useEffect(() => {
+    if (caravanStore.isGameInitialized) {
+      setPrevGameState(caravanStore.currentState);
+    }
+  }, [caravanStore.currentState, caravanStore.isGameInitialized]);
 
   useEffect(() => {
     if (params.id) {

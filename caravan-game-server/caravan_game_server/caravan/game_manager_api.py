@@ -11,7 +11,14 @@ router = APIRouter(prefix="/games")
 
 @router.post("/create")
 def create_room(data: Optional[CreateRoomRequest] = None):
-    game_id = game_manager.create_game(data.room_name if data else "Defaulе")
+    is_private = True
+    room_name = "Default"
+
+    if data:
+        is_private = bool(data.is_private)
+        room_name = data.room_name or "Default"
+
+    game_id = game_manager.create_game(room_name, is_private=is_private)
 
     return {"game_id": game_id}
 
@@ -26,3 +33,8 @@ def join_room(game_id: str, user: UserDependency):
         raise HTTPException(status_code=403, detail=str(e))
 
     return {"player_side": player_side}
+
+
+@router.get("/open")
+def get_open_games():
+    return game_manager.get_public_games()

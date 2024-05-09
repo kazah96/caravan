@@ -22,6 +22,9 @@ class GameManager:
         self.scheduler.add_job(self._prune_empty_games, "cron", minute="*/4")
         self.scheduler.start()
 
+    def get_public_games(self):
+        return [id for (id, game) in self.games.items() if game.is_private == False and len(game.joined_players) < 2]
+
     def get_game_by_id(self, game_id: str) -> Game | None:
         return self.games.get(game_id)
 
@@ -59,10 +62,10 @@ class GameManager:
             if id not in self.games:
                 return id
 
-    def create_game(self, room_name: Optional[str] = "") -> str:
+    def create_game(self, room_name: Optional[str] = "", is_private=True) -> str:
         created_at = datetime.datetime.now()
         id = self.creat_unique_id()
-        game = Game(game_name=room_name, created_at=created_at)
+        game = Game(game_name=room_name, created_at=created_at, is_private=is_private)
         game.on_game_closed.connect(self._handle_game_closed)
         game.on_game_winner.connect(self._handle_game_winner)
 

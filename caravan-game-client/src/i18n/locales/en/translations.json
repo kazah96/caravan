@@ -1,7 +1,8 @@
 {
   "lobby": {
     "greetings": "Hello, {{name}}",
-    "createRoom": "Create Room",
+    "createRoom": "Play with a friend",
+    "createPublicRoom": "Play with a random",
     "name": "Name",
     "password": "Password",
     "rating": {

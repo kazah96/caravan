@@ -8,11 +8,19 @@ export class GameStore {
     makeObservable(this, { createGame: true });
   }
 
-  async createGame() {
-    const data = (await this.apiStore.post('/games/create', {})) as AxiosResponse<{
+  async createGame(isPublic = false) {
+    const data = (await this.apiStore.post('/games/create', {
+      is_private: !isPublic,
+    })) as AxiosResponse<{
       game_id: string;
     }>;
 
     return data.data.game_id;
+  }
+
+  async getOpenRooms() {
+    const data = await this.apiStore.get<string[]>('/games/open', {});
+
+    return data.data;
   }
 }
