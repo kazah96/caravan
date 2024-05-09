@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 import { action, computed, makeObservable, observable } from 'mobx';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { ApiStore } from './api/ApiStore';
 
 export class UserStore {
@@ -20,9 +20,35 @@ export class UserStore {
     return this.isUserLoaded && !!this.userName;
   }
 
-  private async createUser(name: string) {
-    await this.apiStore.post('/users/create', { name });
+  public async createUser(name: string, password: string) {
+    const result = await this.apiStore.post<{ error?: string }>('/users/create', {
+      name,
+      password,
+    });
     this.setIsLoading(false);
+    return result.data;
+  }
+
+  public async loginUser(name: string, password: string) {
+    try {
+      const result = await this.apiStore.post<{ access_token: string }>('/users/login', {
+        name,
+        password,
+      });
+      localStorage.setItem('access_token', result.data.access_token);
+      const user = await this.handleWhoami();
+
+      return user;
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        return {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+          error: e.response?.data.detail,
+        };
+      }
+
+      throw e;
+    }
   }
 
   private async getWhoami() {
@@ -30,7 +56,7 @@ export class UserStore {
       name: string;
     }>;
 
-    return data.data.name;
+    return { name: data.data.name };
   }
 
   async requestUsersStats() {
@@ -41,26 +67,29 @@ export class UserStore {
     this.setUserStats(data.data);
   }
 
-  async handleCreateUser(name: string) {
-    this.setIsLoading(true);
-    await this.createUser(name);
-    await this.handleWhoami();
-    this.setIsLoading(false);
-  }
-
   async handleWhoami() {
     this.setIsLoading(true);
 
     try {
-      const userName = await this.getWhoami();
-      this.setUserName(userName);
+      const user = await this.getWhoami();
+      this.setUserName(user.name);
+
+      return user;
     } catch (e) {
       console.error(e);
       this.setUserName('');
+    } finally {
+      this.setIsUserLoaded(true);
+      this.setIsLoading(false);
     }
+    return {};
+  }
 
-    this.setIsUserLoaded(true);
-    this.setIsLoading(false);
+  @action.bound
+  handleLogOff() {
+    this.setIsUserLoaded(false);
+    this.setUserName('');
+    localStorage.removeItem('access_token');
   }
 
   @action.bound

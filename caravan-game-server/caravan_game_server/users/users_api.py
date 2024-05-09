@@ -8,6 +8,7 @@ from caravan_game_server.users.crypto import (
     Token,
     create_access_token,
 )
+from caravan_game_server.users.dependencies import UserDependency
 from caravan_game_server.users.players_storage import (
     UserAlreadyExists,
     storage as user_storage,
@@ -23,27 +24,6 @@ from pydantic import BaseModel
 
 
 router = APIRouter(prefix="/users")
-
-
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")  # type: ignore
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
-    except JWTError:
-        raise credentials_exception
-
-    user = UserDBModel.get(UserDBModel.name == username)
-    if user is None:
-        raise credentials_exception
-    return user
 
 
 class RegisterUserData(BaseModel):
@@ -81,7 +61,7 @@ def login(data: RegisterUserData):
 
 @router.get("/whoami", response_model=User)
 async def read_users_me(
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: UserDependency,
 ):
     return current_user
 

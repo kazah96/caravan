@@ -58,14 +58,13 @@ class GameManager:
             id = randomword(7)
             if id not in self.games:
                 return id
-            
-
 
     def create_game(self, room_name: Optional[str] = "") -> str:
         created_at = datetime.datetime.now()
         id = self.creat_unique_id()
         game = Game(game_name=room_name, created_at=created_at)
         game.on_game_closed.connect(self._handle_game_closed)
+        game.on_game_winner.connect(self._handle_game_winner)
 
         self.games[id] = game
 
@@ -84,18 +83,23 @@ class GameManager:
             (UserGameDBModel.user == loser_id) & (UserGameDBModel.game == game_id)
         ).execute()
 
-    def _handle_game_closed(self, game: Game):
+    def _handle_game_winner(self, game: Game):
         for id, value in self.games.items():
             if value == game:
-
                 winner_id = game.get_winner_user_id()
                 loser_id = game.get_loser_user_id()
                 if winner_id and loser_id:
                     self._update_player_wins(id, winner_id, loser_id)
 
-                logger.info(f"Game id {id} is closed")
+                logger.info(f"Game id {id} winner {winner_id}, loser {loser_id}")
 
+                return
+
+    def _handle_game_closed(self, game: Game):
+        for id, value in self.games.items():
+            if value == game:
                 self._close_game(id)
+                logger.info(f"Game id {id} is closed")
                 return
 
         raise KeyError("Game not found")

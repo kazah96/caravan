@@ -7,7 +7,6 @@ from caravan_game_server.users.users_api import (
 )
 
 from fastapi import FastAPI
-from caravan_game_server.db.db import Game as GameDBModel, UserGame as UserGameDBModel
 
 
 app = FastAPI()

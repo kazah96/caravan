@@ -2,7 +2,7 @@ from datetime import timedelta, timezone, datetime
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from pydantic import BaseModel
-from jose import JWTError, jwt
+from jose import jwt
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
