@@ -38,7 +38,12 @@ import { ResultModal } from './ResultModal';
 
 function spawnNotification(body: string, title: string) {
   // eslint-disable-next-line no-new
-  new Notification(title, { body });
+  if ('Notification' in window) {
+    if (Notification.permission === 'granted') {
+      // eslint-disable-next-line no-new
+      new Notification(title, { body });
+    }
+  }
 }
 
 const CaravanGamePage = observer(function GamePage() {
@@ -62,9 +67,7 @@ const CaravanGamePage = observer(function GamePage() {
       prevGameState === GameState.WAITING &&
       caravanStore.isGameInitialized
     ) {
-      if (Notification.permission === 'granted') {
-        spawnNotification(`${caravanStore.enemy?.name} connected to game`, 'Caravan');
-      }
+      spawnNotification(`${caravanStore.enemy?.name} connected to game`, 'Caravan');
     }
   }, [
     caravanStore.currentState,
