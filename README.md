@@ -7,7 +7,7 @@ Almost. Although some changes have been made: Starting deck is always a standard
 For me, victory conditions in FNV were not clear enough (or just buggy), so here the winner is the one who collected 3 caravans first.
 
 ### How to play:
-1. Come to https://multigateway.online/ or https://multigateway.ru/
+1. Come to https://caravanonline.site/
 
 2. Create a new room and send the link to a friend.
 
